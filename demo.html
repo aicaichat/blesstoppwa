@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BlessTop PWA Demo</title>
+  <!-- React 17 UMD -->
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.js"></script>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Nunito', 'PingFang SC', sans-serif;
+      background-image: url('https://package-app-storage.oss-cn-shenzhen.aliyuncs.com/h5/open_light_bg2.webp');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const GlassCard = ({ children, className='' }) => (
+      <div className={`bg-white/90 backdrop-blur rounded-lg shadow-lg ${className}`}>{children}</div>
+    );
+
+    const PrimaryButton = ({ children, className='', ...rest }) => (
+      <button className={`bg-[#F6AD55] hover:bg-orange-600 text-white px-4 py-2 rounded transition ${className}`} {...rest}>{children}</button>
+    );
+
+    const SectionTitle = ({ children }) => (
+      <h2 className="font-bold text-2xl md:text-3xl text-orange-600 border-b-2 border-orange-500 inline-block mb-4" style={{fontFamily:'Ma Shan Zheng'}}>{children}</h2>
+    );
+
+    function Demo() {
+      const [donation, setDonation] = React.useState(0);
+      return (
+        <GlassCard className="max-w-md w-full p-6 space-y-6">
+          <SectionTitle>观音无畏布施 · Demo</SectionTitle>
+
+          {/* 视频占位 */}
+          <div className="relative w-full h-52 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+            <i className="fas fa-play-circle text-4xl"></i>
+            <span className="absolute bottom-2 right-2 text-xs">60s Blessing Video</span>
+          </div>
+
+          {/* 效果评估按钮 */}
+          <div className="flex gap-4">
+            <PrimaryButton className="flex-1">✅ 有效</PrimaryButton>
+            <PrimaryButton className="flex-1 bg-gray-200 text-orange-600 hover:bg-gray-300">🔄 再来</PrimaryButton>
+          </div>
+
+          {/* 随喜滑块 */}
+          <div>
+            <label className="block mb-2 font-semibold">随喜金额：¥{donation}</label>
+            <input type="range" min="0" max="108" step="1" value={donation} onChange={e=>setDonation(e.target.value)} className="w-full" />
+          </div>
+
+          <PrimaryButton className="w-full">生成回向礼物</PrimaryButton>
+        </GlassCard>
+      );
+    }
+
+    ReactDOM.render(<Demo />, document.getElementById('root'));
+  </script>
+</body>
+</html> 

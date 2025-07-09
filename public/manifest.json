@@ -1,0 +1,23 @@
+{
+  "name": "BlessTop - 无畏布施",
+  "short_name": "BlessTop",
+  "description": "Buddhist fearless giving PWA for anxiety relief",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#F6AD55",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+} 
