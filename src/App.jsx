@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Suspense, lazy, useEffect } from 'react'
 
 // Lazy load pages for better performance
@@ -84,7 +84,8 @@ function App() {
         <div className="relative z-10">
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="/" element={<IntroPage />} />
+              <Route path="/" element={<Navigate to="/bracelet/default" replace />} />
+              <Route path="/intro" element={<IntroPage />} />
               <Route path="/select-intent" element={<SelectIntentPage />} />
               <Route path="/experience" element={<ExperiencePage />} />
               <Route path="/evaluation" element={<EvaluationPage />} />

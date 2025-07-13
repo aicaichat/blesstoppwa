@@ -26,6 +26,23 @@ export default function BraceletPage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // 如果是默认ID，使用默认信息
+        if (braceletId === 'default') {
+          const defaultInfo = {
+            owner: '观音菩萨',
+            chipId: 'GUANYIN-001',
+            material: '紫檀木',
+            beadCount: 108,
+            level: '神级',
+            imageUrl: 'https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/%E5%8D%83%E6%89%8B%E8%A7%82%E9%9F%B3.jpg',
+            consecrationVideo: 'https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/676.mp4',
+            lampOfferingVideo: 'https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/676.mp4'
+          }
+          setInfo(defaultInfo)
+          setLoading(false)
+          return
+        }
+        
         const res = await fetch(`https://bless.top/wp-json/bracelet-info/v1/bracelet/${braceletId}`)
         if (!res.ok) throw new Error('请求失败')
         const data = await res.json()
