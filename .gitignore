@@ -75,4 +75,29 @@ workbox-*.js
 
 # Local development
 .cache/
-.parcel-cache/ 
+.parcel-cache/
+
+# Deployment
+deploy-temp/
+*.backup
+*.bak
+
+# Test files
+test-video.html
+
+# Binary files
+*.ini
+bless-top-pwa@*
+
+# Video files
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.avi
+*.AVI
+public/videos/MTVideo.MP4
+
+# MacOS specific
+.DS_Store
+.DS_Store? 

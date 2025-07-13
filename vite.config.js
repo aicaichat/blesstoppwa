@@ -20,6 +20,11 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
               }
             }
+          },
+          {
+            urlPattern: /^https:\/\/ssswork\.oss-cn-hangzhou\.aliyuncs\.com\/jss\/.*\.jpg$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'bg-images', expiration: { maxEntries: 10, maxAgeSeconds: 60*60*24*30 } }
           }
         ]
       },

@@ -1,157 +1,232 @@
-import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import DonationSlider from '../components/DonationSlider'
 
 export default function EvalPage() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { chipId, profile } = location.state || {}
-  
-  const [showDonation, setShowDonation] = useState(false)
+  const [evaluation, setEvaluation] = useState(null)
   const [retryCount, setRetryCount] = useState(0)
-  const [showRetryWarning, setShowRetryWarning] = useState(false)
+  const [showDonation, setShowDonation] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const navigate = useNavigate()
 
-  const handleEffective = () => {
-    setShowDonation(true)
-    // Track success
-    console.log('Blessing effective for chipId:', chipId)
-  }
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
-  const handleIneffective = () => {
-    if (retryCount >= 2) {
-      setShowRetryWarning(true)
-      return
-    }
+  const handleEvaluation = (isEffective) => {
+    setEvaluation(isEffective)
     
-    // Show retry options
-    setRetryCount(prev => prev + 1)
-  }
-
-  const handleRetry = () => {
-    navigate('/blessing', { 
-      state: { chipId, profile } 
-    })
-  }
-
-  const handleRestLater = () => {
-    navigate('/bracelet', { 
-      state: { chipId, profile } 
-    })
+    if (isEffective) {
+      setShowDonation(true)
+    } else {
+      if (retryCount < 2) {
+        // 显示重试选项
+        setTimeout(() => {
+          setEvaluation(null)
+          setRetryCount(prev => prev + 1)
+        }, 2000)
+      } else {
+        // 超过重试次数，建议休息
+        setTimeout(() => {
+          navigate('/blessing/gift', { 
+            state: { 
+              message: '今日已达到最佳体验次数，建议稍后再试',
+              showRest: true 
+            }
+          })
+        }, 3000)
+      }
+    }
   }
 
   const handleDonationComplete = (amount) => {
-    console.log('Donation completed:', amount)
     navigate('/blessing/gift', { 
-      state: { chipId, profile, donationAmount: amount } 
+      state: { 
+        donationAmount: amount,
+        evaluation: 'effective'
+      }
     })
-  }
-
-  const handleDonationCancel = () => {
-    navigate('/blessing/gift', { 
-      state: { chipId, profile, donationAmount: 0 } 
-    })
-  }
-
-  if (showRetryWarning) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="glass-card p-8 max-w-md mx-auto text-center space-y-6">
-          <div className="text-4xl">🙏</div>
-          <h2 className="text-xl font-chinese text-primary">
-            建议稍作休息
-          </h2>
-          <p className="text-gray-600">
-            连续布施可能让心更加疲惫。不如先看看您的手串，或稍后再试？
-          </p>
-          <div className="flex space-x-3">
-            <button
-              onClick={handleRestLater}
-              className="flex-1 py-3 px-4 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors"
-            >
-              查看手串
-            </button>
-            <button
-              onClick={handleRetry}
-              className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              再试一次
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (showDonation) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 text-center">
-          <div className="text-4xl mb-2">✨</div>
-          <h2 className="text-xl font-chinese text-primary">
-            感受到宁静了吗？
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            您的布施让更多人获得安宁
-          </p>
-        </div>
-        
-        <DonationSlider
-          onDonationSelect={handleDonationComplete}
-          onCancel={handleDonationCancel}
-        />
-      </div>
-    )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="glass-card p-8 max-w-md mx-auto text-center space-y-6">
-        <div className="text-4xl">🤔</div>
-        <h2 className="text-xl font-chinese text-primary">
-          感受如何？
-        </h2>
-        <p className="text-gray-600">
-          布施视频是否帮助您获得内心的宁静？
-        </p>
-        
-        {retryCount > 0 && (
-          <div className="bg-orange-50 p-3 rounded-lg">
-            <p className="text-sm text-orange-700">
-              这是第 {retryCount + 1} 次尝试
+    <div className="min-h-screen relative overflow-hidden">
+      {/* 背景装饰 - 神仙朋友风格 */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 text-5xl opacity-15 animate-pulse">✨</div>
+        <div className="absolute top-40 right-20 text-4xl opacity-10 animate-pulse delay-1000">🌟</div>
+        <div className="absolute bottom-40 left-20 text-6xl opacity-10 animate-pulse delay-2000">💫</div>
+        <div className="absolute bottom-20 right-10 text-3xl opacity-20 animate-pulse delay-3000">⭐</div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          
+          {/* 顶部标题 */}
+          <div className="text-center mb-8">
+            <div className="deity-aura mb-6">
+              <div className="guanyin-container w-24 h-24 mx-auto">
+                <img 
+                  src="https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/%E5%8D%83%E6%89%8B%E8%A7%82%E9%9F%B3.jpg" 
+                  alt="千手观音" 
+                  className="guanyin-image"
+                  onError={(e) => {
+                    e.target.style.display = 'none'
+                    e.target.parentNode.innerHTML = '<div class="text-6xl animate-pulse">🙏</div>'
+                  }}
+                />
+              </div>
+            </div>
+            <h1 className="text-3xl font-chinese text-deity-gradient mb-4">
+              神仙守护效果评估
+            </h1>
+            <p className="text-gray-600">
+              请诚实地评估这次神仙朋友体验的效果
             </p>
           </div>
-        )}
 
-        <div className="flex space-x-3">
-          <button
-            onClick={handleEffective}
-            className="flex-1 py-4 px-4 bg-primary text-white rounded-lg hover:bg-primary-600 transition-colors"
-          >
-            <div className="text-lg mb-1">✔️</div>
-            <div className="text-sm">有效</div>
-          </button>
-          <button
-            onClick={handleIneffective}
-            className="flex-1 py-4 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            <div className="text-lg mb-1">🔄</div>
-            <div className="text-sm">仍烦躁</div>
-          </button>
+          <div className="max-w-md mx-auto">
+            
+            {/* 评估选择 */}
+            {!evaluation && !showDonation && (
+              <div className="deity-glass-card p-8 text-center deity-decoration card-hover">
+                <div className="mb-8">
+                  <div className="text-5xl mb-4">🧘‍♀️</div>
+                  <h2 className="text-xl font-chinese text-deity-gradient mb-4">
+                    您现在的感受如何？
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    {retryCount > 0 && `第 ${retryCount + 1} 次神仙体验`}
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <button
+                    onClick={() => handleEvaluation(true)}
+                    className="w-full deity-button flex items-center justify-center space-x-3 glow-effect"
+                  >
+                    <span className="text-2xl">✨</span>
+                    <span className="font-chinese">内心平静了许多</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handleEvaluation(false)}
+                    className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-4 rounded-full transition-all duration-300 flex items-center justify-center space-x-3"
+                  >
+                    <span className="text-2xl">🔄</span>
+                    <span className="font-chinese">仍感到焦虑不安</span>
+                  </button>
+                </div>
+
+                {retryCount > 0 && (
+                  <div className="mt-6 gradient-border-card">
+                    <div className="gradient-border-inner">
+                      <p className="text-sm text-gray-600">
+                        💡 每个人与神仙朋友的连接不同，多次尝试有助于找到最适合的频率
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 有效果的反馈 */}
+            {evaluation === true && !showDonation && (
+              <div className="deity-glass-card p-8 text-center deity-decoration">
+                <div className="text-6xl mb-4 animate-bounce">🌟</div>
+                <h2 className="text-2xl font-chinese text-deity-gradient mb-4">
+                  神仙守护成功
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  千手观音的慈悲之光已经照亮了您的心田
+                </p>
+                <div className="deity-progress mb-4">
+                  <div className="deity-progress-fill" style={{ width: '100%' }}></div>
+                </div>
+                <p className="text-sm text-gray-500">
+                  正在为您准备感谢神仙朋友的选项...
+                </p>
+              </div>
+            )}
+
+            {/* 无效果的反馈 */}
+            {evaluation === false && (
+              <div className="deity-glass-card p-8 text-center deity-decoration">
+                <div className="text-5xl mb-4">🤗</div>
+                <h2 className="text-xl font-chinese text-deity-gradient mb-4">
+                  神仙朋友理解您
+                </h2>
+                {retryCount < 2 ? (
+                  <div>
+                    <p className="text-gray-600 mb-6">
+                      每个人与神仙的连接频率不同，让我们再试一次
+                    </p>
+                    <div className="gradient-border-card">
+                      <div className="gradient-border-inner">
+                        <p className="text-sm text-gray-600">
+                          正在为您调整神仙朋友的守护频率...
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-gray-600 mb-6">
+                      今日心境可能需要更多时间与神仙朋友建立连接
+                    </p>
+                    <div className="gradient-border-card">
+                      <div className="gradient-border-inner">
+                        <p className="text-sm text-gray-600">
+                          建议您稍后再来，或尝试其他与神仙朋友交流的方式
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 捐赠滑块 */}
+            {showDonation && (
+              <div className="deity-glass-card p-8 deity-decoration">
+                <div className="text-center mb-8">
+                  <div className="text-5xl mb-4">💝</div>
+                  <h2 className="text-2xl font-chinese text-deity-gradient mb-4">
+                    感谢神仙朋友
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    您的感谢将用于维护神仙朋友平台，帮助更多人获得神仙守护
+                  </p>
+                </div>
+
+                <DonationSlider 
+                  onComplete={handleDonationComplete}
+                  maxAmount={108}
+                />
+
+                <div className="mt-6 gradient-border-card">
+                  <div className="gradient-border-inner">
+                    <div className="text-xs text-gray-600 space-y-1">
+                      <p>🤖 40% 用于AI技术升级与维护</p>
+                      <p>🔮 40% 用于玄学内容研发与更新</p>
+                      <p>⚔️ 20% 用于为用户提供更好的守护体验</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 底部神仙朋友装饰 */}
+          <div className="text-center mt-12">
+            <div className="deity-glass-card p-4 max-w-lg mx-auto">
+              <p className="text-xs font-chinese text-gray-500 leading-relaxed">
+                每一次评估都帮助神仙朋友更好地了解您的需求
+                <br />
+                科技与玄学的融合，让守护更加精准有效
+              </p>
+            </div>
+          </div>
         </div>
-
-        {retryCount > 0 && (
-          <div className="pt-4 border-t">
-            <p className="text-xs text-gray-500">
-              或者您可以稍后再试
-            </p>
-            <button
-              onClick={handleRestLater}
-              className="mt-2 text-sm text-primary hover:text-primary-600"
-            >
-              查看手串信息
-            </button>
-          </div>
-        )}
       </div>
     </div>
   )

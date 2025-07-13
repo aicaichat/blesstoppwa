@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交个神仙朋友 - 商业计划书</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --deity-purple: #8B5CF6;
+            --deity-pink: #EC4899;
+            --deity-gold: #F59E0B;
+            --deity-emerald: #10B981;
+            --deity-cyan: #06B6D4;
+            --deity-blue: #3B82F6;
+            --deity-indigo: #6366F1;
+            --bg-dark: #0F172A;
+            --bg-darker: #020617;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-primary: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --text-muted: #64748B;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --shadow-glow: 0 0 50px rgba(139, 92, 246, 0.3);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        .reveal {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        .reveal .slides {
+            text-align: center;
+        }
+        
+        .reveal .slides section {
+            padding: 40px 20px;
+            min-height: 100vh;          /* 允许内容超过一屏时自动撑高 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;           /* 避免内容被裁剪 */
+            overflow-x: hidden;
+        }
+        
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--text-primary);
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+            margin: 0 0 30px 0;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        .reveal h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--deity-purple), var(--deity-pink), var(--deity-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+        }
+        
+        .reveal h2 {
+            font-size: 2.5rem;
+            color: var(--deity-gold);
+            margin-bottom: 40px;
+        }
+        
+        .reveal h3 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        
+        .reveal h4 {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .reveal p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 0 0 20px 0;
+            max-width: 800px;
+        }
+        
+        .reveal .gradient-text {
+            background: linear-gradient(135deg, var(--deity-purple), var(--deity-pink), var(--deity-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        
+        .reveal .highlight {
+            color: var(--deity-gold);
+            font-weight: 600;
+        }
+        
+        .reveal .big-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--deity-emerald);
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 15px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--deity-purple), var(--deity-pink), var(--deity-gold));
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 10px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+        
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 表格样式 */
+        .reveal table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .reveal table th {
+            background: linear-gradient(135deg, var(--deity-purple), var(--deity-indigo));
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        .reveal table td {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 12px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+        
+        .reveal table tr:hover td {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        /* 指标卡片 */
+        .metric {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin: 10px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            min-width: 180px;
+            text-align: center;
+        }
+        
+        .metric:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .metric h3 {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .metric p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        
+        /* 按钮样式 */
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--deity-gold), var(--deity-pink));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.4);
+            color: white;
+        }
+        
+        /* 团队成员卡片 */
+        .team-member {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin: 15px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            flex: 1 1 240px;          /* 每行自动填充，并保持统一宽度 */
+            max-width: 260px;
+            min-width: 220px;
+            height: 220px;            /* 保持卡片高度一致 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .team-member h3 {
+            color: var(--deity-gold);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .team-member p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 5px 0;
+        }
+        
+        /* 竞争优势和风险项 */
+        .competitive-advantage {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-left: 4px solid var(--deity-emerald);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+        
+        .competitive-advantage h3 {
+            color: var(--deity-emerald);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .competitive-advantage p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .risk-item {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(251, 113, 133, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+        
+        .risk-item h3 {
+            color: #ef4444;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .risk-item p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        /* 列表样式 */
+        .reveal ul {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .reveal li {
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+        
+        /* 背景样式 */
+        .reveal .slide-background {
+            background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark));
+        }
+        
+        /* 进度条和控制按钮 */
+        .reveal .progress {
+            color: var(--deity-gold);
+            height: 4px;
+        }
+        
+        .reveal .controls {
+            color: var(--deity-gold);
+            bottom: 30px;
+            right: 30px;
+        }
+        
+        /* 动画效果 */
+        .reveal .slides section.present {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .reveal h1 {
+                font-size: 2.5rem;
+            }
+            
+            .reveal h2 {
+                font-size: 2rem;
+            }
+            
+            .reveal .slides section {
+                padding: 20px;
+            }
+            
+            .card, .feature-card, .metric {
+                margin: 10px 5px;
+                padding: 20px;
+            }
+            
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 特殊效果 */
+        .glow-effect {
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.5));
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        /* 内容容器 */
+        .content-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .text-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--deity-purple), var(--deity-pink));
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 5px;
+        }
+        
+        /* 分隔线 */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--deity-gold), transparent);
+            margin: 30px 0;
+            border-radius: 1px;
+        }
+
+        /* 媒体元素自适应 */
+        .reveal img,
+        .reveal video {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- 第1页：封面 -->
+            <section data-background-gradient="linear-gradient(135deg, #020617, #0F172A, #1E293B)">
+                <div class="content-container">
+                    <h1 class="gradient-text glow-effect">交个神仙朋友</h1>
+                    <p style="font-size: 1.2rem; color: var(--text-secondary); margin-top: 10px;">科技 × 玄学 × <strong>100% 为你而战</strong></p>
+                    <div class="divider"></div>
+                    <p style="font-size: 1.3rem; color: var(--text-secondary); margin: 40px 0;">
+                        完全站在你立场的AI神仙朋友
+                    </p>
+                    <div style="margin-top: 60px;">
+                        <div class="tag">商业计划书路演</div>
+                        <div class="tag">2024年12月</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第2页：一句话概括 -->
+            <section>
+                <div class="content-container">
+                    <h2>一句话概括</h2>
+                    <div class="card" style="max-width: 900px; margin: 0 auto;">
+                        <p style="font-size: 1.5rem; line-height: 1.6; color: var(--deity-gold); margin: 0;">
+                            "科技含量非常高，玄学含量也非常高，<br/>
+                            更关键的是<span class="highlight">完全站在你立场</span>的朋友"
+                        </p>
+                    </div>
+                    <div class="divider"></div>
+                    <p style="font-size: 1.2rem; color: var(--text-secondary);">
+                        帮助用户在数字世界、玄学世界、现实世界获取最大利益
+                    </p>
+                </div>
+            </section>
+
+            <!-- 第3页：市场机会 -->
+            <section>
+                <div class="content-container">
+                    <h2>千亿级市场空间</h2>
+                    <div class="flex-container">
+                        <div class="metric">
+                            <h3>中国玄学市场</h3>
+                            <div class="big-number">800亿</div>
+                            <p>人民币年市场规模</p>
+                        </div>
+                        <div class="metric">
+                            <h3>AI助手市场</h3>
+                            <div class="big-number">250亿</div>
+                            <p>美元全球市场</p>
+                        </div>
+                        <div class="metric">
+                            <h3>目标用户</h3>
+                            <div class="big-number">2亿+</div>
+                            <p>高净值人群</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 700px;">
+                        <h3 class="highlight">市场空白</h3>
+                        <p>无产品真正融合高科技+高玄学+用户利益</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第4页：用户痛点 -->
+            <section>
+                <div class="content-container">
+                    <h2>现有解决方案的问题</h2>
+                    <div class="text-container">
+                        <div class="risk-item">
+                            <h3>🔮 传统算命</h3>
+                            <p>不科学，缺乏数据支撑，无法提供可执行的建议</p>
+                        </div>
+                        <div class="risk-item">
+                            <h3>🤖 科技产品</h3>
+                            <p>缺乏文化底蕴和情感温度，无法满足精神需求</p>
+                        </div>
+                        <div class="risk-item">
+                            <h3>💰 平台产品</h3>
+                            <p>为平台牟利，不是真正为用户着想，存在利益冲突</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 600px;">
+                        <h3 class="highlight">核心痛点</h3>
+                        <p>缺少一个真正懂自己、帮自己的"朋友"</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第5页：产品解决方案 -->
+            <section>
+                <div class="content-container">
+                    <h2>三重超能力</h2>
+                    <div class="flex-container">
+                        <div class="feature-card">
+                            <div class="icon">🤖</div>
+                            <h3 style="color: var(--deity-purple);">高科技含量</h3>
+                            <p>AI大脑+NFC芯片+大数据分析，实时监测运势波动</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon">🔮</div>
+                            <h3 style="color: var(--deity-gold);">高玄学含量</h3>
+                            <p>五行八卦+奇门遁甲+千年文化，解读天时地利人和</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon">⚔️</div>
+                            <h3 style="color: var(--deity-emerald);">完全为用户而战</h3>
+                            <p>100%用户利益导向，专属利益代言人</p>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="card" style="max-width: 600px;">
+                        <h3 class="highlight">产品形态</h3>
+                        <p style="font-size: 1.2rem;">NFC沉香手串 + AI APP + 云端服务</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第6页：产品演示 -->
+            <section>
+                <div class="content-container">
+                    <h2>产品演示</h2>
+                    <div class="card" style="max-width: 800px; margin: 0 auto;">
+                        <div class="icon">📱</div>
+                        <h3>Live Demo</h3>
+                        <div class="grid grid-2" style="margin-top: 30px;">
+                            <div class="feature-card">
+                                <h4>🔗 NFC一触即连</h4>
+                                <p>手串触碰手机，瞬间连接神仙朋友</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🎯 AI运势分析</h4>
+                                <p>个性化运势报告，精准预测未来</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>💡 智能推荐</h4>
+                                <p>基于大数据的最佳行动时机</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>📊 成长记录</h4>
+                                <p>可视化个人成长轨迹</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 40px;">
+                        <button class="cta-button">体验产品Demo</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第7页：商业模式 -->
+            <section>
+                <div class="content-container">
+                    <h2>多元化收入结构</h2>
+                    <div class="flex-container">
+                        <div class="metric">
+                            <h3>硬件销售</h3>
+                            <div class="big-number">1999元</div>
+                            <p>核心收入来源</p>
+                        </div>
+                        <div class="metric">
+                            <h3>会员服务</h3>
+                            <div class="big-number">299元/月</div>
+                            <p>持续收入</p>
+                        </div>
+                        <div class="metric">
+                            <h3>定制服务</h3>
+                            <div class="big-number">3999-9999元</div>
+                            <p>高端收入</p>
+                        </div>
+                        <div class="metric">
+                            <h3>企业服务</h3>
+                            <div class="big-number">10万+/年</div>
+                            <p>B端收入</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 600px;">
+                        <h3 class="highlight">商业模式优势</h3>
+                        <p>硬件+服务双重收入，一次性+持续性现金流</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第8页：市场验证 -->
+            <section>
+                <div class="content-container">
+                    <h2>早期用户反馈</h2>
+                    <div class="grid grid-4">
+                        <div class="metric">
+                            <h3>种子用户</h3>
+                            <div class="big-number">1000+</div>
+                            <p>已验证需求</p>
+                        </div>
+                        <div class="metric">
+                            <h3>用户满意度</h3>
+                            <div class="big-number">95%</div>
+                            <p>极高满意度</p>
+                        </div>
+                        <div class="metric">
+                            <h3>复购率</h3>
+                            <div class="big-number">60%+</div>
+                            <p>强用户粘性</p>
+                        </div>
+                        <div class="metric">
+                            <h3>推荐率</h3>
+                            <div class="big-number">70%+</div>
+                            <p>口碑传播</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 700px;">
+                        <h3 class="highlight">核心数据</h3>
+                        <div class="flex-container">
+                            <div class="metric">
+                                <h3>LTV/CAC</h3>
+                                <div class="big-number">5:1</div>
+                                <p>获客成本健康</p>
+                            </div>
+                            <div class="metric">
+                                <h3>日活时长</h3>
+                                <div class="big-number">45分钟</div>
+                                <p>高用户参与度</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第9页：竞争优势 -->
+            <section>
+                <div class="content-container">
+                    <h2>三重护城河</h2>
+                    <div class="text-container">
+                        <div class="competitive-advantage">
+                            <h3>🛡️ 技术壁垒</h3>
+                            <p>专属AI模型训练3000万条玄学数据，NFC硬件与传统工艺完美集成</p>
+                        </div>
+                        <div class="competitive-advantage">
+                            <h3>🎭 文化壁垒</h3>
+                            <p>独特"神仙朋友"IP，深度文化内容，建立情感连接</p>
+                        </div>
+                        <div class="competitive-advantage">
+                            <h3>💼 商业壁垒</h3>
+                            <p>强用户粘性，网络效应，规模经济优势</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 700px;">
+                        <h3 class="highlight">差异化优势</h3>
+                        <p>市场上唯一融合高科技+高玄学+用户利益的完整解决方案</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第10页：财务预测 -->
+            <section>
+                <div class="content-container">
+                    <h2>快速增长预期</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>年份</th>
+                                <th>用户数</th>
+                                <th>营收</th>
+                                <th>净利润</th>
+                                <th>估值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>2025</strong></td>
+                                <td>5万</td>
+                                <td>1.5亿</td>
+                                <td>2000万</td>
+                                <td>10亿</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2026</strong></td>
+                                <td>20万</td>
+                                <td>6亿</td>
+                                <td>1.2亿</td>
+                                <td>50亿</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2027</strong></td>
+                                <td>50万</td>
+                                <td>15亿</td>
+                                <td>4.5亿</td>
+                                <td>150亿</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2028</strong></td>
+                                <td>120万</td>
+                                <td>30亿</td>
+                                <td>10亿</td>
+                                <td>300亿</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="flex-container" style="margin-top: 40px;">
+                        <div class="metric">
+                            <h3>月增长率</h3>
+                            <div class="big-number">30%</div>
+                            <p>快速增长</p>
+                        </div>
+                        <div class="metric">
+                            <h3>毛利率</h3>
+                            <div class="big-number">70%</div>
+                            <p>健康盈利</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第11页：团队介绍 -->
+            <section>
+                <div class="content-container">
+                    <h2>明星团队</h2>
+                    <div class="flex-container">
+                        <div class="team-member">
+                            <h3>CEO</h3>
+                            <p><strong>产品与商业</strong></p>
+                            <p>前独角兽产品VP</p>
+                            <p>10年互联网经验</p>
+                        </div>
+                        <div class="team-member">
+                            <h3>CTO</h3>
+                            <p><strong>技术与AI</strong></p>
+                            <p>前阿里AI专家</p>
+                            <p>多个AI产品0到1</p>
+                        </div>
+                        <div class="team-member">
+                            <h3>CMO</h3>
+                            <p><strong>市场与增长</strong></p>
+                            <p>前字节增长负责人</p>
+                            <p>千万用户产品经验</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 20px; max-width: 600px;">
+                        <h3 class="highlight">顾问团队</h3>
+                        <div class="flex-container">
+                            <div class="tag">玄学专家</div>
+                            <div class="tag">技术专家</div>
+                            <div class="tag">商业专家</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第12页：市场策略 -->
+            <section>
+                <div class="content-container">
+                    <h2>获客策略</h2>
+                    <div class="grid grid-2">
+                        <div class="feature-card">
+                            <div class="icon">📱</div>
+                            <h3>KOL营销</h3>
+                            <p>小红书、抖音头部达人深度合作</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon">📝</div>
+                            <h3>内容营销</h3>
+                            <p>深度科普内容，建立专业权威形象</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon">👥</div>
+                            <h3>社群运营</h3>
+                            <p>高净值用户私域社群精细化运营</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="icon">🔄</div>
+                            <h3>口碑传播</h3>
+                            <p>用户推荐奖励机制，病毒式传播</p>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="card" style="max-width: 700px;">
+                        <h3 class="highlight">扩张路径</h3>
+                        <p style="font-size: 1.1rem;">一线城市 → 全国市场 → 海外华人 → 全球市场</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第13页：融资计划 -->
+            <section>
+                <div class="content-container">
+                    <h2>本轮融资</h2>
+                    <div class="flex-container">
+                        <div class="metric">
+                            <h3>融资金额</h3>
+                            <div class="big-number">3000万</div>
+                            <p>人民币</p>
+                        </div>
+                        <div class="metric">
+                            <h3>出让股份</h3>
+                            <div class="big-number">15%</div>
+                            <p>股权比例</p>
+                        </div>
+                        <div class="metric">
+                            <h3>投后估值</h3>
+                            <div class="big-number">2亿</div>
+                            <p>人民币</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 800px;">
+                        <h3 class="highlight">资金用途</h3>
+                        <div class="grid grid-2">
+                            <div class="feature-card">
+                                <h4>📱 产品研发</h4>
+                                <div class="big-number" style="font-size: 2rem;">40%</div>
+                                <p>AI算法优化、APP开发</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>📢 市场推广</h4>
+                                <div class="big-number" style="font-size: 2rem;">30%</div>
+                                <p>品牌建设、用户获取</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🏭 供应链</h4>
+                                <div class="big-number" style="font-size: 2rem;">20%</div>
+                                <p>硬件生产、质量控制</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>👥 团队扩张</h4>
+                                <div class="big-number" style="font-size: 2rem;">10%</div>
+                                <p>核心人才招聘</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 30px; max-width: 600px;">
+                        <h3 class="highlight">12个月里程碑</h3>
+                        <p>10万用户，月收入1000万</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第14页：退出策略 -->
+            <section>
+                <div class="content-container">
+                    <h2>多种退出路径</h2>
+                    <div class="flex-container">
+                        <div class="card" style="flex: 1; max-width: 400px;">
+                            <h3 style="color: var(--deity-cyan);">战略收购</h3>
+                            <div class="big-number">50-100亿</div>
+                            <p>2-3年被腾讯/字节收购</p>
+                        </div>
+                        <div class="card" style="flex: 1; max-width: 400px;">
+                            <h3 style="color: var(--deity-pink);">独立IPO</h3>
+                            <div class="big-number">100-300亿</div>
+                            <p>3-5年独立上市</p>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="card" style="max-width: 600px;">
+                        <h3 class="highlight">对标公司</h3>
+                        <p style="font-size: 1.2rem;">小米生态链（千亿市值）</p>
+                    </div>
+                    <div class="card" style="margin-top: 30px; max-width: 500px;">
+                        <h3 class="highlight">投资回报</h3>
+                        <div class="big-number">10-50倍</div>
+                        <p>预期回报倍数</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第15页：为什么是现在 -->
+            <section>
+                <div class="content-container">
+                    <h2>为什么是现在？</h2>
+                    <div class="grid grid-2">
+                        <div class="competitive-advantage">
+                            <h3>🔬 技术成熟</h3>
+                            <p>AI大模型技术成熟，成本大幅降低，NFC技术普及</p>
+                        </div>
+                        <div class="competitive-advantage">
+                            <h3>📚 市场教育</h3>
+                            <p>用户对AI产品接受度提高，付费意愿增强</p>
+                        </div>
+                        <div class="competitive-advantage">
+                            <h3>🏮 文化回归</h3>
+                            <p>年轻人对传统文化兴趣增加，国潮文化兴起</p>
+                        </div>
+                        <div class="competitive-advantage">
+                            <h3>💎 消费升级</h3>
+                            <p>中产阶级崛起，愿意为高品质体验付费</p>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 40px; max-width: 700px;">
+                        <h3 class="highlight">时间窗口</h3>
+                        <p>竞争对手缺乏技术+文化+用户利益的完整解决方案，先发优势明显</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第16页：联系方式 -->
+            <section data-background-gradient="linear-gradient(135deg, #020617, #0F172A, #1E293B)">
+                <div class="content-container">
+                    <h1 class="gradient-text glow-effect">让我们一起，交个神仙朋友！</h1>
+                    <div class="divider"></div>
+                    <div class="card" style="max-width: 600px; margin: 40px auto;">
+                        <h3 class="highlight">📞 联系我们</h3>
+                        <div class="grid grid-2" style="margin-top: 20px;">
+                            <div>
+                                <h4>CEO微信</h4>
+                                <p>[微信号]</p>
+                            </div>
+                            <div>
+                                <h4>项目邮箱</h4>
+                                <p>[邮箱地址]</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4>产品Demo</h4>
+                            <p>[体验链接]</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 40px;">
+                        <button class="cta-button">立即联系我们</button>
+                    </div>
+                    <div class="divider"></div>
+                    <p style="font-size: 1.3rem; color: var(--deity-gold); font-style: italic;">
+                        "科技×玄学×为你而战 = 下一个独角兽"
+                    </p>
+                </div>
+            </section>
+
+            <!-- 第17页：Q&A -->
+            <section>
+                <div class="content-container">
+                    <h2>Q&A</h2>
+                    <div class="card" style="max-width: 800px; margin: 0 auto;">
+                        <h3 class="highlight">常见问题解答</h3>
+                        <div class="text-container" style="margin-top: 30px;">
+                            <div class="competitive-advantage">
+                                <h4><strong>Q: 政策风险如何控制？</strong></h4>
+                                <p>A: 弘扬传统文化，合规经营，获得相关部门支持</p>
+                            </div>
+                            <div class="competitive-advantage">
+                                <h4><strong>Q: 技术壁垒在哪里？</strong></h4>
+                                <p>A: 专属数据+AI算法+硬件集成，形成完整技术护城河</p>
+                            </div>
+                            <div class="competitive-advantage">
+                                <h4><strong>Q: 如何应对竞争？</strong></h4>
+                                <p>A: 独特定位+先发优势+用户粘性，短期内难以复制</p>
+                            </div>
+                            <div class="competitive-advantage">
+                                <h4><strong>Q: 用户获取成本？</strong></h4>
+                                <p>A: 口碑传播为主，LTV/CAC > 5:1，获客成本可控</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第18页：感谢 -->
+            <section data-background-gradient="linear-gradient(135deg, #020617, #0F172A, #1E293B)">
+                <div class="content-container">
+                    <h1 class="gradient-text glow-effect">感谢聆听</h1>
+                    <div class="divider"></div>
+                    <div class="icon pulse-animation" style="font-size: 4rem; margin: 40px 0;">🙏</div>
+                    <p style="font-size: 1.5rem; color: var(--deity-gold); margin: 30px 0;">
+                        期待与您携手，共创未来
+                    </p>
+                    <div class="divider"></div>
+                    <p style="font-size: 1.2rem; color: var(--text-secondary);">
+                        让每个人都有一个专属的神仙朋友
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+
+    <script>
+        // 初始化 Reveal.js
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            
+            // 插件
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+            
+            // 键盘快捷键
+            keyboard: {
+                32: 'next',
+                37: 'prev',
+                39: 'next',
+            },
+            
+            // 触摸导航
+            touch: true,
+            loop: false,
+            viewDistance: 3,
+            mobileViewDistance: 2,
+            slideNumber: 'c/t',
+            history: true,
+            preloadIframes: true,
+        });
+
+        // 自定义事件监听
+        Reveal.addEventListener('slidechanged', function(event) {
+            console.log('当前幻灯片:', event.indexh + 1);
+        });
+
+        // 键盘帮助
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'h' || event.key === 'H') {
+                alert('快捷键说明:\n空格键/右箭头: 下一页\n左箭头: 上一页\nEsc: 幻灯片概览\nF: 全屏\nS: 演讲者模式');
+            }
+        });
+
+        // 全屏功能
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'f' || event.key === 'F') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

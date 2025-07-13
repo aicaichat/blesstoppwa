@@ -1,49 +1,93 @@
 import { useState, useEffect } from 'react'
 
-const API_BASE = 'https://bless.top/wp-json/bracelet-info/v2'
-
-// Mock data for development
-const mockProfileData = {
-  'demo-chip': {
-    theme: 'guanyin',
-    language: 'zh-CN',
-    mood: 'anxious',
-    goalTag: 'calm',
-    owner: '演示用户',
-    material: 'sandalwood',
-    meritPoints: 108
-  }
+// Mock data that matches the actual API structure
+const mockBraceletData = {
+  imageUrl: 'https://package-app-storage.oss-cn-shenzhen.aliyuncs.com/bracelet/sample-bracelet.webp',
+  owner: '善缘居士',
+  chipId: 'Y7K9P2M4Q8R5T1N6B3J0F2H5D9G4L9W8',
+  material: '小叶紫檀',
+  beadCount: '108',
+  level: '开光加持',
+  consecrationDate: '2024年7月8日',
+  consecrationTemple: '普陀山普济禅寺',
+  consecrationHall: '大雄宝殿',
+  consecrationMaster: '慧明法师',
+  consecrationVideo: 'https://package-app-storage.oss-cn-shenzhen.aliyuncs.com/videos/consecration.mp4',
+  lampOfferingVideo: 'https://package-app-storage.oss-cn-shenzhen.aliyuncs.com/videos/lamp-offering.mp4',
+  meritProgress: 75,
+  // Additional fields for PWA
+  theme: 'guanyin',
+  language: 'zh',
+  mood: '焦虑',
+  goalTag: '内心平静',
+  meritPoints: 1080
 }
 
-export function useBraceletProfile(chipId) {
+export default function useBraceletProfile(chipId = null) {
   const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    if (!chipId) return
+  // Get braceletId from URL if not provided
+  const getBraceletIdFromURL = () => {
+    if (typeof window === 'undefined') return null
+    const params = new URLSearchParams(window.location.search)
+    return params.get('braceletId') || params.get('braceletid') || chipId
+  }
 
+  useEffect(() => {
     const fetchProfile = async () => {
-      setLoading(true)
-      setError(null)
-      
       try {
-        const response = await fetch(`${API_BASE}/${chipId}`)
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`)
+        setLoading(true)
+        setError(null)
+
+        const braceletId = getBraceletIdFromURL()
+        
+        if (!braceletId) {
+          // Use mock data when no braceletId is provided
+          setProfile(mockBraceletData)
+          setLoading(false)
+          return
         }
-        const data = await response.json()
-        setProfile(data)
+
+        // Try to fetch from actual API
+        const apiUrl = `https://bless.top/wp-json/bracelet-info/v1/bracelet/${braceletId}`
+        
+        try {
+          const response = await fetch(apiUrl)
+          
+          if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`)
+          }
+          
+          const data = await response.json()
+          
+          // Merge API data with PWA-specific fields
+          const enhancedProfile = {
+            ...data,
+            // Add PWA-specific fields if not present
+            theme: data.theme || 'guanyin',
+            language: data.language || 'zh',
+            mood: data.mood || '焦虑',
+            goalTag: data.goalTag || '内心平静',
+            meritPoints: data.meritPoints || Math.floor((data.meritProgress || 0) * 10.8)
+          }
+          
+          setProfile(enhancedProfile)
+        } catch (apiError) {
+          console.warn('API fetch failed, using mock data:', apiError.message)
+          
+          // Use mock data with the provided braceletId
+          setProfile({
+            ...mockBraceletData,
+            chipId: braceletId
+          })
+        }
+        
+        setLoading(false)
       } catch (err) {
-        // Fallback to mock data in development
-        if (mockProfileData[chipId]) {
-          console.log('Using mock data for development')
-          setProfile(mockProfileData[chipId])
-        } else {
-          setError(err.message)
-          console.error('Failed to fetch bracelet profile:', err)
-        }
-      } finally {
+        console.error('Profile fetch error:', err)
+        setError(err.message)
         setLoading(false)
       }
     }
@@ -51,35 +95,12 @@ export function useBraceletProfile(chipId) {
     fetchProfile()
   }, [chipId])
 
-  const setMood = async (newMood) => {
-    if (!chipId) return false
-
-    try {
-      const response = await fetch(`${API_BASE}/${chipId}/mood`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mood: newMood })
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
-      }
-
-      const updatedProfile = await response.json()
-      setProfile(updatedProfile)
-      return true
-    } catch (err) {
-      // Fallback for development
-      if (mockProfileData[chipId]) {
-        const updated = { ...mockProfileData[chipId], mood: newMood }
-        mockProfileData[chipId] = updated
-        setProfile(updated)
-        return true
-      }
-      console.error('Failed to update mood:', err)
-      return false
+  const updateMood = (newMood) => {
+    if (profile) {
+      setProfile(prev => ({
+        ...prev,
+        mood: newMood
+      }))
     }
   }
 
@@ -87,6 +108,15 @@ export function useBraceletProfile(chipId) {
     profile,
     loading,
     error,
-    setMood
+    updateMood,
+    refetch: () => {
+      const braceletId = getBraceletIdFromURL()
+      if (braceletId) {
+        // Re-fetch data
+        setLoading(true)
+        setError(null)
+        // The useEffect will handle the refetch
+      }
+    }
   }
 } 

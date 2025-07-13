@@ -1,257 +1,201 @@
-import { useState, useEffect } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { useBraceletProfile } from '../hooks/useBraceletProfile'
+import React, { useEffect, useState, useRef } from 'react'
+import { useParams } from 'react-router-dom'
+import GlassCard from '../components/GlassCard'
+import VideoWithFade from '../components/VideoWithFade'
+import MeritRing from '../components/MeritRing'
+import TypingSutra from '../components/TypingSutra'
 
-// 信息展示项组件
-function InfoItem({ label, value, icon }) {
-  return (
-    <div className="flex items-center bg-orange-100 p-3 rounded-lg shadow-sm">
-      <i className={`fas ${icon} text-orange-500 mr-3 text-xl`}></i>
-      <div>
-        <span className="font-semibold text-orange-800">{label}:</span>
-        <span className="ml-2 text-orange-700">{value || '暂无'}</span>
-      </div>
-    </div>
-  )
-}
-
-// 导航项组件
-function NavItem({ id, label, icon, active, onClick }) {
-  return (
-    <li
-      className={`cursor-pointer nav-item ${
-        active
-          ? 'text-orange-500 border-b-2 border-orange-500'
-          : 'text-gray-600'
-      } hover:text-orange-500 transition-colors duration-200 pb-2 px-2 md:px-4`}
-      onClick={onClick}
-    >
-      <i className={`fas ${icon} mr-1 md:mr-2`}></i>
-      <span className="text-sm md:text-base">{label}</span>
-    </li>
-  )
-}
-
-// 视频播放器组件
-function VideoPlayer({ src, title }) {
-  return (
-    <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <video controls className="w-full rounded-lg shadow-lg">
-        <source src={src} type="video/mp4" />
-        您的浏览器不支持视频播放。
-      </video>
-    </div>
-  )
-}
+// 复用背景粒子组件
+import ParticleBackground from '../components/ParticleBackground'
+import FloatingOrbs from '../components/FloatingOrbs'
+import ParallaxBuddhaBackground from '../components/ParallaxBuddhaBackground'
+import { motion } from 'framer-motion'
 
 export default function BraceletPage() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  
-  // 从 URL 或 state 获取 chipId
-  const chipIdFromState = location.state?.chipId
-  const chipIdFromURL = searchParams.get('braceletId') || searchParams.get('braceletid') || searchParams.get('chipId')
-  const chipId = chipIdFromState || chipIdFromURL || 'demo-chip'
-  
-  const { profile: braceletInfo, loading, error } = useBraceletProfile(chipId)
-  const [activeSection, setActiveSection] = useState('basic')
+  const { braceletId } = useParams()
+  const [info, setInfo] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [merit, setMerit] = useState(() => +localStorage.getItem('merit') || 0)
 
-  // 滚动到指定 section
-  const scrollToSection = (sectionId) => {
-    const section = document.getElementById(sectionId)
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' })
-      setActiveSection(sectionId)
+  // 全屏视频
+  const [fullSrc, setFullSrc] = useState(null) // for other videos
+  const sutraRef = useRef(null)
+  const [showTrend, setShowTrend] = useState(false)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch(`https://bless.top/wp-json/bracelet-info/v1/bracelet/${braceletId}`)
+        if (!res.ok) throw new Error('请求失败')
+        const data = await res.json()
+        setInfo(data)
+      } catch (err) {
+        console.error(err)
+        setError('无法获取法宝信息')
+      } finally {
+        setLoading(false)
+      }
     }
+    fetchData()
+  }, [braceletId])
+
+  const addMerit = () => {
+    const m = merit + 1
+    setMerit(m)
+    localStorage.setItem('merit', m)
   }
 
-  // 导航到修炼页面
-  const navigateToWishPractice = () => {
-    window.open('https://bless.top/bg.html', '_blank')
-  }
+  const gotoDraw = () => { window.location.href = 'https://bless.top/sss.html' }
 
-  // 如果数据还在加载
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-orange-300 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-xl text-orange-700">加载法宝信息中，请稍候...</p>
-        </div>
-      </div>
-    )
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>
 
-  // 如果出现错误
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen space-y-4">
-        <p className="text-red-600 text-lg">
-          无法获取法宝信息，请检查 braceletId 是否正确或稍后重试。
-        </p>
-        <p className="text-sm text-gray-600">错误: {error}</p>
-        <div className="flex space-x-4">
-          <button
-            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
-            onClick={() => window.location.reload()}
-          >
-            重试
-          </button>
-          <button
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-            onClick={() => navigate('/blessing', { state: { chipId } })}
-          >
-            开始布施
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // 如果成功获取到 braceletInfo
   return (
-    <div 
-      className="min-h-screen"
-      style={{
-        backgroundImage: 'url(https://package-app-storage.oss-cn-shenzhen.aliyuncs.com/h5/open_light_bg2.webp)',
-        backgroundSize: 'cover',
-        backgroundAttachment: 'fixed',
-        backgroundPosition: 'center'
-      }}
-    >
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-center text-white mb-8 font-chinese" 
-            style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
-          心无挂碍般若文创
-        </h1>
-        
-        {/* 导航栏 */}
-        <nav className="mb-8 sticky top-0 bg-white shadow-md rounded-lg p-2 md:p-4 z-10 overflow-x-auto">
-          <ul className="flex justify-between md:justify-around">
-            <NavItem
-              id="basic"
-              label="法宝信息"
-              icon="fa-info-circle"
-              active={activeSection === 'basic'}
-              onClick={() => scrollToSection('basic')}
-            />
-            <NavItem
-              id="consecration"
-              label="仪式加持"
-              icon="fa-pray"
-              active={activeSection === 'consecration'}
-              onClick={() => scrollToSection('consecration')}
-            />
-            <NavItem
-              id="lamp"
-              label="供灯加持"
-              icon="fa-fire"
-              active={activeSection === 'lamp'}
-              onClick={() => scrollToSection('lamp')}
-            />
-            <NavItem
-              id="merit"
-              label="今日求签"
-              icon="fa-heart"
-              active={activeSection === 'merit'}
-              onClick={() => scrollToSection('merit')}
-            />
-          </ul>
-        </nav>
-        
-        <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-lg overflow-hidden">
-          <div className="p-4 md:p-6">
-            {/* 基本信息 */}
-            <div id="basic" className="flex flex-col md:flex-row items-center mb-12">
-              <div className="w-full md:w-1/3 mb-6 md:mb-0">
-                <img
-                  src={braceletInfo?.imageUrl || '/placeholder-bracelet.jpg'}
-                  alt="Buddhist prayer beads"
-                  className="w-full h-auto rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
-                  onError={(e) => {
-                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y2QUQ1NSIvPgogIDx0ZXh0IHg9IjE1MCIgeT0iMTcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSI2MCI+8J+qtzwvdGV4dD4KPC9zdmc+'
-                  }}
-                />
-              </div>
-              <div className="w-full md:w-2/3 md:pl-8">
-                <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-orange-600 border-b-2 border-orange-500 inline-block pb-1">
-                  法宝基本信息
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <InfoItem label="主人" value={braceletInfo?.owner} icon="fa-user" />
-                  <InfoItem label="芯片编号" value={chipId} icon="fa-microchip" />
-                  <InfoItem label="材质类型" value={braceletInfo?.material} icon="fa-gem" />
-                  <InfoItem label="佛珠数量" value={braceletInfo?.beadCount || '108'} icon="fa-circle" />
-                  <InfoItem label="法宝等级" value={braceletInfo?.level || '一级'} icon="fa-star" />
-                  <InfoItem label="功德积分" value={braceletInfo?.meritPoints || '108'} icon="fa-heart" />
-                </div>
-              </div>
-            </div>
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory relative deity-bg">
+      <ParallaxBuddhaBackground images={[
+        'https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/%E5%8D%83%E6%89%8B%E8%A7%82%E9%9F%B3.jpg'
+      ]} />
+      <FloatingOrbs />
+      <ParticleBackground />
+      <MeritRing value={merit} onLongPress={() => setShowTrend(true)} />
 
-            {/* 仪式加持 */}
-            <div id="consecration" className="mb-12">
-              <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-orange-600 border-b-2 border-orange-500 inline-block pb-1">
-                仪式加持
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <InfoItem label="开光时间" value={braceletInfo?.consecrationDate || '2024-01-01'} icon="fa-calendar-alt" />
-                <InfoItem label="开光寺院" value={braceletInfo?.consecrationTemple || '普陀山寺'} icon="fa-place-of-worship" />
-                <InfoItem label="开光殿堂" value={braceletInfo?.consecrationHall || '观音殿'} icon="fa-gopuram" />
-                <InfoItem label="主持法师" value={braceletInfo?.consecrationMaster || '慧明法师'} icon="fa-user-tie" />
-              </div>
-              <VideoPlayer
-                src={braceletInfo?.consecrationVideo || ''}
-                title="开光仪式视频"
-              />
-            </div>
+      {/* Section 1: Hero */}
+      <motion.section
+        className="min-h-screen snap-start flex flex-col justify-center items-center px-4"
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <motion.div whileHover={{ scale: 1.04 }} transition={{ type: 'spring', stiffness: 200, damping: 15 }}>
+          <GlassCard className="max-w-md w-full p-6 text-center">
+            <img
+              src="https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/%E5%8D%83%E6%89%8B%E8%A7%82%E9%9F%B3.jpg"
+              alt="观音菩萨"
+              className="w-48 h-48 object-cover object-top rounded-full mx-auto mb-4 shadow-lg"
+            />
+            <h2 className="text-3xl md:text-4xl font-chinese text-deity-gradient mb-2 tracking-wide">观音菩萨</h2>
+            <p className="text-lg font-chinese text-gray-600 mb-4">神名：观音</p>
+            <p className="text-gray-700 font-chinese mb-2">观音菩萨慈悲加持，闻声救苦。</p>
+            <p className="font-chinese text-gradient mb-1">愿你心无挂碍，福慧增长。</p>
+          </GlassCard>
+        </motion.div>
+      </motion.section>
 
-            {/* 供灯加持 */}
-            <div id="lamp" className="mb-12">
-              <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-orange-600 border-b-2 border-orange-500 inline-block pb-1">
-                供灯许愿
-              </h2>
-              <VideoPlayer
-                src={braceletInfo?.lampOfferingVideo || ''}
-                title="供灯仪式视频"
-              />
-            </div>
-
-            {/* 修炼加持 */}
-            <div id="merit" className="mb-12">
-              <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-orange-600 border-b-2 border-orange-500 inline-block pb-1">
-                今日求签
-              </h2>
-              <div className="bg-gray-200 rounded-full h-6 overflow-hidden mb-6">
-                <div
-                  className="bg-orange-500 h-full transition-all duration-1000 ease-in-out"
-                  style={{ width: `${braceletInfo?.meritProgress || 75}%` }}
-                ></div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="text-center">
-                  <button
-                    onClick={navigateToWishPractice}
-                    className="bg-orange-500 text-white px-6 py-3 rounded-full hover:bg-orange-600 transition duration-300 transform hover:scale-105 shadow-lg text-lg"
-                  >
-                    今日求签
-                  </button>
-                </div>
-                <div className="text-center">
-                  <button
-                    onClick={() => navigate('/blessing', { state: { chipId, profile: braceletInfo } })}
-                    className="bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-600 transition duration-300 transform hover:scale-105 shadow-lg text-lg"
-                  >
-                    开始布施
-                  </button>
-                </div>
-              </div>
+      {/* Section 2: 基本信息 + 视频 */}
+      <motion.section
+        className="min-h-screen snap-start flex justify-center items-center p-4"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <GlassCard className="w-full max-w-4xl p-6">
+          <div className="grid md:grid-cols-2 gap-6 items-center">
+            <img src={info?.imageUrl} alt="bracelet" loading="lazy" className="w-full rounded-xl shadow-xl" />
+            <div>
+              <h2 className="text-3xl font-chinese text-deity-gradient mb-4 tracking-wide">法宝信息</h2>
+              <ul className="space-y-2 text-gray-700">
+                <li>主人：{info?.owner}</li>
+                <li>芯片编号：{info?.chipId}</li>
+                <li>材质类型：{info?.material}</li>
+                <li>佛珠数量：{info?.beadCount}</li>
+                <li>法宝等级：{info?.level}</li>
+              </ul>
             </div>
           </div>
+
+          {/* 视频区域 */}
+          {info?.consecrationVideo && (
+            <VideoWithFade src={info.consecrationVideo} title="开光仪式视频" poster={info?.imageUrl} />
+          )}
+          {info?.lampOfferingVideo && (
+            <VideoWithFade src={info.lampOfferingVideo} title="供灯仪式视频" poster={info?.imageUrl} />
+          )}
+        </GlassCard>
+      </motion.section>
+
+      {/* Section 3: 修持心经 */}
+      <motion.section
+        className="min-h-screen snap-start flex justify-center items-center p-4"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <GlassCard className="w-full max-w-3xl p-6">
+          <h2 className="text-2xl font-semibold text-orange-500 mb-4">修持心经</h2>
+
+          <div className="relative mb-4">
+            <video
+              ref={sutraRef}
+              controls
+              playsInline
+              preload="metadata"
+              crossorigin="anonymous"
+              className="w-full rounded-xl shadow-xl"
+              onLoadStart={() => console.log('Video loading started')}
+              onLoadedData={() => console.log('Video data loaded')}
+              onError={(e) => {
+                console.error('Video error:', e);
+                console.error('Error code:', e.target.error?.code);
+                console.error('Error message:', e.target.error?.message);
+              }}
+              onCanPlay={() => console.log('Video can play')}
+            >
+              <source src="https://ssswork.oss-cn-hangzhou.aliyuncs.com/jss/676.mp4" type="video/mp4" />
+              您的浏览器不支持视频播放。
+            </video>
+            <button
+              className="absolute top-2 right-2 bg-black/60 text-white p-2 rounded-full"
+              onClick={() => {
+                if (sutraRef.current) {
+                  if (sutraRef.current.requestFullscreen) {
+                    sutraRef.current.requestFullscreen()
+                  } else if (sutraRef.current.webkitEnterFullscreen) {
+                    sutraRef.current.webkitEnterFullscreen()
+                  }
+                }
+              }}
+            >
+              <i className="fas fa-expand"></i>
+            </button>
+          </div>
+
+          <TypingSutra />
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+            <button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-full shadow-md hover:scale-105 transition" onClick={addMerit}>完成修持 +1</button>
+            <button className="bg-gradient-to-r from-pink-500 to-pink-600 text-white py-3 rounded-full shadow-md hover:scale-105 transition" onClick={gotoDraw}>今日求签</button>
+          </div>
+        </GlassCard>
+      </motion.section>
+
+      {/* 全屏视频 */}
+      {fullSrc && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center" onClick={() => setFullSrc(null)}>
+          <video src={fullSrc} autoPlay controls playsInline className="w-full h-full object-contain" />
+          <button className="absolute top-4 right-4 text-white text-3xl" onClick={() => setFullSrc(null)}>
+            ×
+          </button>
         </div>
-      </div>
+      )}
+
+      {showTrend && (
+        <motion.div
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', stiffness: 120 }}
+          className="fixed top-0 right-0 h-full w-4/5 md:w-1/3 bg-white/90 backdrop-blur-lg shadow-2xl z-50 p-6 overflow-auto"
+        >
+          <h3 className="text-xl font-semibold mb-4 text-orange-500">近 7 日功德趋势</h3>
+          <p className="text-gray-600 mb-4">(示例) 您已累计 {merit} 点功德。</p>
+          <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={() => setShowTrend(false)}>关闭</button>
+        </motion.div>
+      )}
     </div>
   )
 } 
+ 

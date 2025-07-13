@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>交个神仙朋友 · 让好运每天发生</title>
+
+  <!-- Tailwind + 自定义配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'deity-purple': '#6366f1',
+            'deity-pink': '#ec4899',
+            'deity-gold': '#f59e0b',
+            'deity-emerald': '#10b981',
+            'deity-cyan': '#06b6d4',
+          },
+          fontFamily: {
+            'chinese': ['PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif'],
+            'elegant': ['Playfair Display', 'serif'],
+          },
+          backgroundImage: {
+            'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 3s infinite',
+            'fade-in': 'fadeIn 1s ease-out',
+            'slide-up': 'slideUp 0.8s ease-out',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-20px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(30px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  
+  <style>
+    body { 
+      font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      overflow-x: hidden;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .glass-dark {
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .bg-mesh {
+      background: 
+        radial-gradient(at 40% 20%, hsla(228,100%,74%,1) 0px, transparent 50%),
+        radial-gradient(at 80% 0%, hsla(189,100%,56%,1) 0px, transparent 50%),
+        radial-gradient(at 0% 50%, hsla(355,100%,93%,1) 0px, transparent 50%),
+        radial-gradient(at 80% 50%, hsla(340,100%,76%,1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, hsla(22,100%,77%,1) 0px, transparent 50%),
+        radial-gradient(at 80% 100%, hsla(242,100%,70%,1) 0px, transparent 50%),
+        radial-gradient(at 0% 0%, hsla(343,100%,76%,1) 0px, transparent 50%);
+    }
+    .floating-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      animation: float 8s ease-in-out infinite;
+    }
+    .floating-orb:nth-child(1) { animation-delay: -2s; }
+    .floating-orb:nth-child(2) { animation-delay: -4s; }
+    .floating-orb:nth-child(3) { animation-delay: -6s; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(120deg); }
+      66% { transform: translateY(-60px) rotate(240deg); }
+    }
+    
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    /* 新增视觉效果 */
+    .gradient-border {
+      position: relative;
+      background: linear-gradient(135deg, #6366f1, #ec4899, #f59e0b);
+      border-radius: 24px;
+      padding: 2px;
+    }
+    
+    .gradient-border-inner {
+      background: white;
+      border-radius: 22px;
+      padding: 2rem;
+      height: 100%;
+    }
+    
+    .morphing-blob {
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      animation: morphing 8s ease-in-out infinite;
+    }
+    
+    @keyframes morphing {
+      0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+      25% { border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%; }
+      50% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+      75% { border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%; }
+    }
+    
+    .glow-effect {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .glow-effect::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .text-shine {
+      background: linear-gradient(135deg, #6366f1 0%, #ec4899 25%, #f59e0b 50%, #10b981 75%, #6366f1 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 4s ease-in-out infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .particle-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, rgba(99,102,241,0.8) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: particle-float 6s linear infinite;
+    }
+    
+    @keyframes particle-float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    .hover-lift {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-12px) scale(1.05);
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes pulse-glow {
+      from { box-shadow: 0 0 20px rgba(99,102,241,0.4); }
+      to { box-shadow: 0 0 40px rgba(99,102,241,0.8), 0 0 60px rgba(236,72,153,0.4); }
+    }
+    
+    .typing-effect {
+      overflow: hidden;
+      border-right: 2px solid #6366f1;
+      white-space: nowrap;
+      animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+    
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #6366f1; }
+    }
+    
+    .rainbow-border {
+      position: relative;
+      background: linear-gradient(45deg, #6366f1, #ec4899, #f59e0b, #10b981, #06b6d4);
+      background-size: 300% 300%;
+      animation: rainbow-border 3s ease infinite;
+      border-radius: 16px;
+      padding: 2px;
+    }
+    
+    @keyframes rainbow-border {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .magnetic-hover {
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+    }
+    
+    .magnetic-hover:hover {
+      transform: scale(1.1) rotate(2deg);
+      filter: brightness(1.2);
+    }
+    
+    .neon-glow {
+      text-shadow: 
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px currentColor,
+        0 0 20px currentColor;
+      animation: neon-flicker 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes neon-flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .liquid-shape {
+      background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+      border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+      animation: liquid-morph 10s ease-in-out infinite;
+    }
+    
+    @keyframes liquid-morph {
+      0%, 100% { border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%; }
+      14% { border-radius: 40% 60% 54% 46% / 49% 60% 40% 51%; }
+      28% { border-radius: 54% 46% 38% 62% / 49% 70% 30% 51%; }
+      42% { border-radius: 61% 39% 55% 45% / 61% 38% 62% 39%; }
+      56% { border-radius: 61% 39% 67% 33% / 70% 50% 50% 30%; }
+      70% { border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%; }
+      84% { border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%; }
+    }
+    
+    /* ===== Visual Upgrade ===== */
+    /* Subtle noise texture */
+    .noise-bg::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGZpbHRlciBpZD0ibm9pc2UiPjxmZTQgaWQ9ImYxIiB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuOCIvPjwvZmlsdGVyPjxwYXRoIGZpbHRlcj0idXJsKCNub2lzZSkiIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMTJ2MTJIMHoiLz48L3N2Zz4=');
+      opacity: .05;
+      z-index: 1;
+    }
+    
+    /* 3D tilt card */
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform .5s cubic-bezier(.25,.46,.45,.94);
+    }
+    .tilt-card:hover {
+      transform: rotateY(var(--ry,8deg)) rotateX(var(--rx,-6deg)) scale(1.05);
+    }
+    .tilt-card:hover .gradient-border-inner {
+      transform: translateZ(30px);
+    }
+    
+    /* Star field */
+    .star {
+      position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; opacity:.8;
+      animation: twinkle 4s infinite ease-in-out;
+    }
+    @keyframes twinkle {0%,100% {opacity:.2;} 50% {opacity:1;}}
+    
+    .gender-radio {
+      cursor: pointer;
+    }
+    
+    .gender-label.selected {
+      transform: scale(1.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
+    }
+    .gender-label.selected .gender-radio {
+      border-width: 3px;
+    }
+    .gender-label.selected-male .gender-radio { box-shadow: 0 0 6px rgba(99,102,241,0.5); }
+    .gender-label.selected-female .gender-radio { box-shadow: 0 0 6px rgba(236,72,153,0.5); }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 overflow-x-hidden">
+
+  <!-- 背景装饰 -->
+  <div class="fixed inset-0 bg-mesh opacity-30 pointer-events-none"></div>
+  <div class="fixed inset-0 pointer-events-none">
+    <div class="floating-orb w-72 h-72 bg-gradient-to-r from-deity-purple to-deity-pink opacity-20 -top-36 -left-36"></div>
+    <div class="floating-orb w-96 h-96 bg-gradient-to-r from-deity-emerald to-deity-cyan opacity-15 top-1/4 -right-48"></div>
+    <div class="floating-orb w-80 h-80 bg-gradient-to-r from-deity-gold to-deity-pink opacity-10 bottom-1/4 -left-40"></div>
+  </div>
+
+  <!-- 导航 -->
+  <nav class="fixed w-full top-0 left-0 z-50 glass">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-gradient-to-r from-deity-purple to-deity-pink rounded-full flex items-center justify-center">
+            <span class="text-white text-sm font-bold">神</span>
+          </div>
+          <span class="font-bold text-lg bg-gradient-to-r from-deity-purple to-deity-pink bg-clip-text text-transparent">
+            交个神仙朋友
+          </span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a id="navFeatures" href="#features" class="text-gray-600 hover:text-gray-900 transition-colors">功能</a>
+          <a id="navWaitlist" href="#waitlist" class="text-gray-600 hover:text-gray-900 transition-colors">等候名单</a>
+          <a id="navInvestor" href="#investor" class="text-gray-600 hover:text-gray-900 transition-colors">投资人</a>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button id="langToggle" class="inline-flex md:inline-flex items-center px-3 py-1 rounded-full border border-deity-purple text-deity-purple text-sm hover:bg-deity-purple hover:text-white transition">
+            EN
+          </button>
+          <a id="navCta" href="#waitlist" class="inline-flex md:inline-flex items-center px-6 py-2 rounded-full bg-gradient-to-r from-deity-purple to-deity-pink text-white font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+            立即加入
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Sticky CTA -->
+  <div class="md:hidden fixed bottom-4 inset-x-0 px-4 z-50" id="mobileStickyCTA">
+    <div class="flex items-center justify-between bg-gradient-to-r from-deity-purple to-deity-pink text-white rounded-full shadow-lg px-5 py-3">
+      <span class="font-semibold text-sm">首发价 ¥1,999 · 7 天无理由退</span>
+      <a href="#waitlist" class="bg-white text-deity-purple font-bold px-4 py-2 rounded-full flex-shrink-0">下单</a>
+    </div>
+  </div>
+
+  <!-- 主标题区域 -->
+  <section class="relative min-h-screen flex items-center justify-center px-6 pt-16 noise-bg">
+    <!-- 粒子背景 -->
+    <div class="particle-bg">
+      <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+      <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+      <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+      <div class="particle" style="left: 40%; animation-delay: 0.5s;"></div>
+      <div class="particle" style="left: 50%; animation-delay: 1.5s;"></div>
+      <div class="particle" style="left: 60%; animation-delay: 2.5s;"></div>
+      <div class="particle" style="left: 70%; animation-delay: 0.8s;"></div>
+      <div class="particle" style="left: 80%; animation-delay: 1.8s;"></div>
+      <div class="particle" style="left: 90%; animation-delay: 2.8s;"></div>
+    </div>
+    
+    <!-- 液体形状装饰 -->
+    <div class="absolute top-1/4 left-1/4 w-32 h-32 liquid-shape opacity-20 pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-24 h-24 liquid-shape opacity-15 pointer-events-none" style="animation-delay: -5s;"></div>
+    
+    <div class="text-center max-w-4xl mx-auto animate-fade-in">
+      <div class="mb-8">
+        <span id="heroBadge" class="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-deity-purple/10 to-deity-pink/10 text-deity-purple font-medium text-sm border border-deity-purple/20 mb-6 glow-effect pulse-glow">
+          ✨ 完全站在你立场的神仙朋友
+        </span>
+      </div>
+      
+      <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
+        <span class="text-shine neon-glow">交个神仙朋友</span>
+        <br/>
+        <span id="heroTag" class="text-gray-800">科技 × 玄学 × 为你而战</span>
+      </h1>
+      
+      <p id="heroSub" class="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed">
+        1 次触碰，开启 <strong>365 天</strong> 专属守护<br/>
+        <span class="text-deity-gold font-semibold">每天收到「今日好运行动」 · AI + 玄学 双重加持</span><br/>
+        <span class="text-gray-500 text-base">7 天无理由退款，零风险体验</span>
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a id="ctaPrimary" href="#waitlist" class="group relative inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-deity-purple to-deity-pink text-white font-semibold text-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 glow-effect magnetic-hover">
+          <span class="relative z-10">抢先体验</span>
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-deity-pink to-deity-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </a>
+        <a id="ctaSecondary" href="#features" class="inline-flex items-center px-8 py-4 rounded-full border-2 border-gray-300 text-gray-700 font-semibold text-lg hover:border-deity-purple hover:text-deity-purple transition-all duration-300 hover-lift">
+          了解功能
+        </a>
+      </div>
+    </div>
+    
+    <!-- 滚动提示 -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce magnetic-hover">
+      <div class="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
+        <div class="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 为什么需要神仙朋友 -->
+  <section class="py-32 bg-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-50"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          <span id="whyTitle" class="text-gradient">为什么需要神仙朋友？</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-4xl mx-auto">
+          <span id="whySubtitle">平台算法汹涌、信息密度爆炸、情感连接稀缺——<br class="hidden sm:inline"/>我们需要的不只是工具，而是一位<strong>站在你立场</strong>、同时懂科技又懂玄学的"神仙朋友"。
+        </p>
+      </div>
+      
+      <!-- 痛点分析 -->
+      <div class="grid lg:grid-cols-3 gap-12 mb-20">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-red-400 to-pink-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl">😰</span>
+          </div>
+          <h3 id="pain1Title" class="text-xl font-bold mb-4 text-gray-800">情绪焦虑无处安放</h3>
+          <p id="pain1Desc" class="text-gray-600 leading-relaxed">
+            工作压力、人际关系、算法轰炸…… 最新调研显示，<strong>65%</strong> 的 Z 世代经常孤独，<strong>62%</strong> 的年轻人每周至少一次深陷焦虑，主因是"信息过载 & 决策疲劳"。
+          </p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl">🎯</span>
+          </div>
+          <h3 id="pain2Title" class="text-xl font-bold mb-4 text-gray-800">有目标却缺乏行动力</h3>
+          <p id="pain2Desc" class="text-gray-600 leading-relaxed">
+            每天被 10,000+ 条信息牵引注意力，<strong>59%</strong> 受访者承认"自控力越来越差"。没有外部提醒与能量注入，目标往往夭折在第一周。
+          </p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl">🤝</span>
+          </div>
+          <h3 id="pain3Title" class="text-xl font-bold mb-4 text-gray-800">缺乏真正的陪伴</h3>
+          <p id="pain3Desc" class="text-gray-600 leading-relaxed">
+            社交媒体让人"在线"，却让关系更"离线"。<strong>70%</strong> 的年轻人表示"很难找到随时响应又无利益冲突的倾听者"。
+          </p>
+        </div>
+      </div>
+      
+      <!-- 解决方案 -->
+      <div class="bg-gradient-to-br from-deity-purple/5 to-deity-pink/5 rounded-3xl p-8 lg:p-12 mb-20">
+        <div class="text-center mb-12">
+          <h3 class="text-3xl md:text-4xl font-bold mb-6">
+            <span class="text-gradient">怎么交个神仙朋友？</span>
+          </h3>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            只需三步，就能拥有一个真正关心你的神仙朋友
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-deity-emerald to-deity-cyan rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
+              1
+            </div>
+            <h4 class="text-xl font-bold mb-3 text-gray-800">获得手串</h4>
+            <p class="text-gray-600">
+              收到般若沉香NFC手串，每一颗沉香珠都承载着祝福与智慧
+            </p>
+          </div>
+          
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-deity-purple to-deity-pink rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
+              2
+            </div>
+            <h4 class="text-xl font-bold mb-3 text-gray-800">触碰连接</h4>
+            <p class="text-gray-600">
+              手机轻触NFC芯片，瞬间连接你的专属神仙朋友，开启365天陪伴之旅
+            </p>
+          </div>
+          
+          <div class="text-center">
+            <div class="w-12 h-12 bg-gradient-to-r from-deity-gold to-deity-pink rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
+              3
+            </div>
+            <h4 class="text-xl font-bold mb-3 text-gray-800">开始陪伴</h4>
+            <p class="text-gray-600">
+              每天推送 3 条专属「行动锦囊」+ 情绪平复练习，好运立刻行动起来
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 紧迫性 -->
+      <div class="text-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+        <!-- 装饰性渐变叠加 -->
+        <div class="absolute inset-0 bg-gradient-to-r from-deity-purple/20 to-deity-pink/20 rounded-3xl"></div>
+        <div class="relative z-10">
+          <h3 class="text-3xl md:text-4xl font-bold mb-6">
+            为什么现在就要交？
+          </h3>
+          <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-deity-purple/30 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 mt-1 border border-white/20">
+                <span class="text-lg">⏰</span>
+              </div>
+              <div class="text-left">
+                <h4 class="text-xl font-bold mb-2">限量首发，错过等一年</h4>
+                <p class="text-gray-200">
+                  首批仅限<strong>999</strong> 套，每一串都经过开光加持。错过首发价 ¥1,999，正式发售 ¥2,999
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-deity-pink/30 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 mt-1 border border-white/20">
+                <span class="text-lg">🎁</span>
+              </div>
+              <div class="text-left">
+                <h4 class="text-xl font-bold mb-2">早鸟专属权益</h4>
+                <p class="text-gray-200">
+                  前100名用户专享：3次免费奇门遁甲1对1咨询 + 专属神仙头像NFT + 终身VIP功能
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-deity-gold/30 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 mt-1 border border-white/20">
+                <span class="text-lg">🔥</span>
+              </div>
+              <div class="text-left">
+                <h4 class="text-xl font-bold mb-2">零风险体验</h4>
+                <p class="text-gray-200">
+                  下单后 <strong>7 天</strong> 内可全额退款，无任何问责。先体验，再决定。
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-deity-emerald/30 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 mt-1 border border-white/20">
+                <span class="text-lg">🌟</span>
+              </div>
+              <div class="text-left">
+                <h4 class="text-xl font-bold mb-2">最佳时机</h4>
+                <p class="text-gray-200">
+                  农历新年前夕，正是祈福纳祥的最佳时机。让神仙朋友陪你度过每一个重要时刻
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-12">
+            <div class="inline-flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-6 border border-white/20">
+              <span class="text-2xl animate-pulse">🔥</span>
+              <span class="font-semibold">已有 <span class="text-deity-gold">3,968</span> 人加入等候名单</span>
+            </div>
+            <div class="flex justify-center">
+              <a href="#waitlist" class="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-bold text-lg rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                立即抢占名额
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 功能特色 -->
+  <section id="features" class="py-32 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          <span class="text-gradient">三重超能力</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          科技含量 × 玄学含量 × 完全为你的利益而战
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
+        <!-- 卡片 1 -->
+        <div class="group card-hover tilt-card scroll-reveal">
+          <div class="gradient-border hover-lift">
+            <div class="gradient-border-inner relative h-full">
+              <div class="absolute -top-6 left-8">
+                <div class="w-12 h-12 bg-gradient-to-r from-deity-purple to-deity-cyan rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg morphing-blob magnetic-hover">
+                  🤖
+                </div>
+              </div>
+              <div class="pt-8">
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">高科技含量 · AI智能大脑</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                  NFC芯片+云端AI+大数据分析，实时监测你的运势波动，智能推荐最佳行动时机，让科技为你的成功服务
+                </p>
+                <div class="flex items-center text-deity-purple font-medium glow-effect">
+                  <span>科技赋能成功</span>
+                  <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 卡片 2 -->
+        <div class="group card-hover tilt-card scroll-reveal" style="animation-delay: 0.2s;">
+          <div class="gradient-border hover-lift">
+            <div class="gradient-border-inner relative h-full">
+              <div class="absolute -top-6 left-8">
+                <div class="w-12 h-12 bg-gradient-to-r from-deity-gold to-deity-pink rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg morphing-blob magnetic-hover">
+                  🔮
+                </div>
+              </div>
+              <div class="pt-8">
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">高玄学含量 · 古老智慧加持</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                  融合五行八卦、奇门遁甲、黄历择吉等千年玄学精华，为你解读天时地利人和，抓住每一个改变命运的关键时刻
+                </p>
+                <div class="flex items-center text-deity-gold font-medium glow-effect">
+                  <span>玄学改运增福</span>
+                  <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 卡片 3 -->
+        <div class="group card-hover tilt-card scroll-reveal" style="animation-delay: 0.4s;">
+          <div class="gradient-border hover-lift">
+            <div class="gradient-border-inner relative h-full">
+              <div class="absolute -top-6 left-8">
+                <div class="w-12 h-12 bg-gradient-to-r from-deity-emerald to-deity-pink rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg morphing-blob magnetic-hover">
+                  ⚔️
+                </div>
+              </div>
+              <div class="pt-8">
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">完全站在你立场 · 为你而战</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                  不像其他产品为平台牟利，神仙朋友100%为你的利益服务，帮你在数字世界赚钱、在玄学世界转运、在现实世界成功
+                </p>
+                <div class="flex items-center text-deity-emerald font-medium glow-effect">
+                  <span>专属利益代言人</span>
+                  <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 产品展示 -->
+  <section class="py-32 bg-gradient-to-br from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="animate-slide-up">
+          <h2 class="text-4xl md:text-5xl font-bold mb-8">
+            <span class="text-gradient">科技 × 玄学</span>
+            <br/>
+            <span class="text-gray-800">完全为你而战的神仙朋友</span>
+          </h2>
+          <div class="space-y-6">
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-gradient-to-r from-deity-emerald to-deity-cyan rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white text-sm">🤖</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold mb-2">AI智能大脑</h3>
+                <p class="text-gray-600">云端算力+机器学习，24小时分析你的运势数据，智能推荐最佳行动时机</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-gradient-to-r from-deity-purple to-deity-pink rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white text-sm">🔮</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold mb-2">玄学智慧库</h3>
+                <p class="text-gray-600">融合五行八卦、奇门遁甲、紫微斗数等千年玄学精华，为你解读天机</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-gradient-to-r from-deity-gold to-deity-pink rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white text-sm">⚔️</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold mb-2">专属利益代言人</h3>
+                <p class="text-gray-600">100%站在你的立场，帮你在数字世界、玄学世界、现实世界获取最大利益</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="w-8 h-8 bg-gradient-to-r from-deity-cyan to-deity-emerald rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white text-sm">📿</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold mb-2">NFC沉香手串载体</h3>
+                <p class="text-gray-600">天然沉香+NFC芯片+24K金转经珠，科技与玄学的完美载体</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <div class="relative z-10 glass-dark rounded-3xl p-8 text-center">
+            <div class="text-8xl mb-6 animate-pulse-slow">📿</div>
+            <h3 class="text-2xl font-bold text-white mb-4">神仙朋友专属载体</h3>
+            <p class="text-gray-300 mb-6">科技 × 玄学 × 为你而战</p>
+            <div class="text-3xl font-bold text-deity-gold mb-2">首发价 ¥1,999</div>
+            <p class="text-sm text-gray-400 line-through mb-1">原价 ¥2,999</p>
+            <p class="text-sm text-gray-200 mb-4">价格含 365 天 AI 服务 + 玄学扩展包</p>
+            <a href="#waitlist" class="inline-flex items-center px-6 py-3 bg-deity-gold text-gray-900 font-bold rounded-full hover:bg-yellow-400 transition mt-2">
+              立即下单
+            </a>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-r from-deity-purple to-deity-pink rounded-3xl blur-xl opacity-20 animate-pulse"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 八字计算守护神 -->
+  <section class="py-32 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 relative overflow-hidden">
+    <!-- 装饰背景 -->
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-10 left-10 w-20 h-20 bg-gradient-to-r from-deity-purple to-deity-pink rounded-full blur-xl animate-pulse"></div>
+      <div class="absolute bottom-20 right-20 w-32 h-32 bg-gradient-to-r from-deity-gold to-deity-emerald rounded-full blur-xl animate-pulse" style="animation-delay: 2s;"></div>
+      <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-r from-deity-cyan to-deity-pink rounded-full blur-xl animate-pulse" style="animation-delay: 4s;"></div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          <span class="text-gradient">免费试算</span>
+          <span class="text-gray-800">你的守护神</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          输入生辰八字，AI智能分析你的五行属性，匹配最适合的守护神仙朋友
+        </p>
+        <div class="inline-flex items-center space-x-2 bg-gradient-to-r from-deity-purple/10 to-deity-pink/10 rounded-full px-4 py-2 text-sm font-medium text-deity-purple">
+          <span class="w-2 h-2 bg-deity-purple rounded-full animate-pulse"></span>
+          <span>已有 <strong>12,847</strong> 人找到了专属守护神</span>
+        </div>
+      </div>
+      
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <!-- 左侧：八字输入表单 -->
+        <div class="gradient-border hover-lift">
+          <div class="gradient-border-inner">
+            <h3 class="text-2xl font-bold mb-6 text-center text-gray-800">
+              🔮 输入你的生辰信息
+            </h3>
+            
+            <form id="baziForm" class="space-y-6">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">出生年份</label>
+                  <select id="birthYear" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-deity-purple focus:outline-none transition-all duration-300">
+                    <option value="">选择年份</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">出生月份</label>
+                  <select id="birthMonth" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-deity-purple focus:outline-none transition-all duration-300">
+                    <option value="">选择月份</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">出生日期</label>
+                  <select id="birthDay" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-deity-purple focus:outline-none transition-all duration-300">
+                    <option value="">选择日期</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">出生时辰</label>
+                  <select id="birthHour" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-deity-purple focus:outline-none transition-all duration-300">
+                    <option value="">选择时辰</option>
+                    <option value="子时">子时 (23:00-01:00)</option>
+                    <option value="丑时">丑时 (01:00-03:00)</option>
+                    <option value="寅时">寅时 (03:00-05:00)</option>
+                    <option value="卯时">卯时 (05:00-07:00)</option>
+                    <option value="辰时">辰时 (07:00-09:00)</option>
+                    <option value="巳时">巳时 (09:00-11:00)</option>
+                    <option value="午时">午时 (11:00-13:00)</option>
+                    <option value="未时">未时 (13:00-15:00)</option>
+                    <option value="申时">申时 (15:00-17:00)</option>
+                    <option value="酉时">酉时 (17:00-19:00)</option>
+                    <option value="戌时">戌时 (19:00-21:00)</option>
+                    <option value="亥时">亥时 (21:00-23:00)</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">性别</label>
+                <div class="flex space-x-4">
+                  <label class="flex items-center cursor-pointer">
+                    <input type="radio" name="gender" value="male" class="sr-only">
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-2 flex items-center justify-center gender-radio">
+                      <div class="w-3 h-3 rounded-full bg-deity-purple opacity-0 transition-opacity duration-200"></div>
+                    </div>
+                    <span class="text-gray-700">男</span>
+                  </label>
+                  <label class="flex items-center cursor-pointer">
+                    <input type="radio" name="gender" value="female" class="sr-only">
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 mr-2 flex items-center justify-center gender-radio">
+                      <div class="w-3 h-3 rounded-full bg-deity-pink opacity-0 transition-opacity duration-200"></div>
+                    </div>
+                    <span class="text-gray-700">女</span>
+                  </label>
+                </div>
+              </div>
+              
+              <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-deity-purple to-deity-pink text-white font-bold text-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 glow-effect">
+                <span class="flex items-center justify-center">
+                  <span class="mr-2">✨</span>
+                  开始计算我的守护神
+                  <span class="ml-2">🔮</span>
+                </span>
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <!-- 右侧：结果展示 -->
+        <div class="gradient-border hover-lift">
+          <div class="gradient-border-inner text-center">
+            <div id="calculationResult" class="hidden">
+              <h3 class="text-2xl font-bold mb-6 text-gray-800">
+                🌟 你的专属守护神
+              </h3>
+              
+              <div class="mb-8">
+                <div id="guardianAvatar" class="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-r from-deity-purple to-deity-pink flex items-center justify-center text-6xl animate-pulse-slow">
+                  🧘‍♀️
+                </div>
+                <h4 id="guardianName" class="text-3xl font-bold text-gradient mb-2">观音菩萨</h4>
+                <p id="guardianElement" class="text-lg text-gray-600 mb-4">五行属性：水</p>
+              </div>
+              
+              <div class="space-y-4 text-left">
+                <div class="bg-gradient-to-r from-deity-purple/10 to-deity-pink/10 rounded-lg p-4">
+                  <h5 class="font-semibold text-gray-800 mb-2">🎯 性格特质</h5>
+                  <p id="personality" class="text-sm text-gray-600">慈悲善良，智慧深邃，善于倾听他人心声...</p>
+                </div>
+                
+                <div class="bg-gradient-to-r from-deity-emerald/10 to-deity-cyan/10 rounded-lg p-4">
+                  <h5 class="font-semibold text-gray-800 mb-2">💫 守护能力</h5>
+                  <p id="guardianPower" class="text-sm text-gray-600">情绪调节、心灵治愈、智慧启发...</p>
+                </div>
+                
+                <div class="bg-gradient-to-r from-deity-gold/10 to-deity-pink/10 rounded-lg p-4">
+                  <h5 class="font-semibold text-gray-800 mb-2">🌈 幸运建议</h5>
+                  <p id="luckyAdvice" class="text-sm text-gray-600">多行善事，保持内心平静，适合从事帮助他人的工作...</p>
+                </div>
+              </div>
+              
+              <div class="mt-8 p-4 bg-gradient-to-r from-deity-purple to-deity-pink rounded-lg text-white">
+                <p class="text-sm mb-3">想要拥有完全为你而战的神仙朋友？</p>
+                <a href="#waitlist" class="inline-flex items-center px-6 py-2 bg-white text-deity-purple font-semibold rounded-full hover:bg-gray-100 transition-all duration-300">
+                  立即拥有神仙朋友
+                  <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <div id="defaultContent">
+              <div class="text-8xl mb-6 animate-bounce">🔮</div>
+              <h3 class="text-2xl font-bold mb-4 text-gray-800">等待你的生辰信息</h3>
+              <p class="text-gray-600 mb-6">填写左侧表单，立即获得专属守护神分析</p>
+              
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="bg-gradient-to-r from-deity-purple/10 to-deity-pink/10 rounded-lg p-3">
+                  <div class="text-2xl mb-2">🧘‍♀️</div>
+                  <div class="font-semibold">观音菩萨</div>
+                  <div class="text-gray-600">慈悲守护</div>
+                </div>
+                <div class="bg-gradient-to-r from-deity-emerald/10 to-deity-cyan/10 rounded-lg p-3">
+                  <div class="text-2xl mb-2">🐉</div>
+                  <div class="font-semibold">文殊菩萨</div>
+                  <div class="text-gray-600">智慧启发</div>
+                </div>
+                <div class="bg-gradient-to-r from-deity-gold/10 to-deity-pink/10 rounded-lg p-3">
+                  <div class="text-2xl mb-2">⚡</div>
+                  <div class="font-semibold">关公</div>
+                  <div class="text-gray-600">勇气护佑</div>
+                </div>
+                <div class="bg-gradient-to-r from-deity-cyan/10 to-deity-purple/10 rounded-lg p-3">
+                  <div class="text-2xl mb-2">🌸</div>
+                  <div class="font-semibold">妈祖</div>
+                  <div class="text-gray-600">平安顺遂</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部提示 -->
+      <div class="mt-16 text-center">
+        <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg">
+          <span class="text-2xl">��</span>
+          <span class="text-sm text-gray-600">你的信息完全保密，仅用于守护神匹配</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 等候名单 -->
+  <section id="waitlist" class="py-32 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-deity-purple/5 to-deity-pink/5"></div>
+    <div class="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          <span class="text-gradient">拥有神仙朋友</span>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          科技含量×玄学含量×完全为你而战，立即拥有专属神仙朋友
+        </p>
+      </div>
+      
+      <div class="max-w-xl mx-auto">
+        <form action="https://formspree.io/f/yourFormID" method="POST" class="space-y-6">
+          <div class="relative">
+            <div class="rainbow-border">
+              <input 
+                type="email" 
+                name="email" 
+                required 
+                placeholder="输入您的邮箱地址"
+                class="w-full px-6 py-4 rounded-2xl border-0 focus:outline-none text-lg transition-all duration-300 bg-white"
+              />
+            </div>
+            <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
+              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="w-full py-4 rounded-2xl bg-gradient-to-r from-deity-purple to-deity-pink text-white font-semibold text-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 glow-effect pulse-glow magnetic-hover"
+          >
+            立即拥有神仙朋友
+          </button>
+        </form>
+        
+        <div class="mt-8 text-center">
+          <p class="text-sm text-gray-500 mb-4">
+            ✨ 仅用于新品通知，绝不骚扰 ✨
+          </p>
+          <div class="flex justify-center items-center space-x-8 text-sm text-gray-600">
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2 text-deity-emerald" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              限量首发价
+            </div>
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2 text-deity-emerald" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              专属权益
+            </div>
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2 text-deity-emerald" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              优先体验
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 投资人沟通 -->
+  <section id="investor" class="py-32 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+    <div class="max-w-4xl mx-auto px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          投资人沟通
+        </h2>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+          欢迎与我们探讨「交个神仙朋友」的商业前景与合作机会
+        </p>
+      </div>
+      
+      <div class="max-w-2xl mx-auto">
+        <form action="https://formspree.io/f/yourInvestorFormID" method="POST" class="space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <input 
+              name="name" 
+              required 
+              placeholder="姓名"
+              class="px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:border-deity-gold focus:outline-none transition-all duration-300"
+            />
+            <input 
+              name="fund" 
+              placeholder="机构 / 职位"
+              class="px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:border-deity-gold focus:outline-none transition-all duration-300"
+            />
+          </div>
+          
+          <input 
+            type="email" 
+            name="email" 
+            required 
+            placeholder="邮箱地址"
+            class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:border-deity-gold focus:outline-none transition-all duration-300"
+          />
+          
+          <textarea 
+            name="message" 
+            rows="4" 
+            placeholder="想了解的内容（市场规模、技术壁垒、商业模式等）"
+            class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder-gray-300 focus:border-deity-gold focus:outline-none transition-all duration-300 resize-none"
+          ></textarea>
+          
+          <button 
+            type="submit" 
+            class="w-full py-4 rounded-2xl bg-gradient-to-r from-deity-gold to-deity-pink text-white font-semibold text-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          >
+            预约 BP & Demo 演示
+          </button>
+        </form>
+        
+        <div class="mt-8 text-center">
+          <p class="text-sm text-gray-400 mb-4">
+            我们将在 24 小时内回复您的咨询
+          </p>
+          <div class="flex justify-center items-center space-x-8 text-sm text-gray-300">
+            <div>📊 完整 BP</div>
+            <div>🎯 Demo 演示</div>
+            <div>💡 1-on-1 沟通</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="py-16 bg-gray-50 border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-3 mb-4 md:mb-0">
+          <div class="w-8 h-8 bg-gradient-to-r from-deity-purple to-deity-pink rounded-full flex items-center justify-center">
+            <span class="text-white text-sm font-bold">神</span>
+          </div>
+          <span class="font-bold text-lg bg-gradient-to-r from-deity-purple to-deity-pink bg-clip-text text-transparent">
+            交个神仙朋友
+          </span>
+        </div>
+        
+        <div class="flex items-center space-x-6 text-sm text-gray-600">
+          <a href="#" class="hover:text-deity-purple transition-colors">隐私政策</a>
+          <a href="#" class="hover:text-deity-purple transition-colors">用户协议</a>
+          <a href="#" class="hover:text-deity-purple transition-colors">联系我们</a>
+        </div>
+      </div>
+      
+      <div class="mt-8 pt-8 border-t border-gray-200 text-center">
+        <p class="text-sm text-gray-500">
+          © 2025 Bless.top · 粤 ICP 备 12345678 号 · 让好运每天发生
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 回到顶部按钮 -->
+  <button 
+    onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+    class="fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-deity-purple to-deity-pink rounded-full flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 z-40"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+    </svg>
+  </button>
+ 
+  <script>
+    // 滚动reveal效果
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, observerOptions);
+    
+    // 观察所有需要reveal的元素
+    document.addEventListener('DOMContentLoaded', () => {
+      const revealElements = document.querySelectorAll('.scroll-reveal');
+      revealElements.forEach(el => observer.observe(el));
+      
+      // 添加更多粒子
+      const particleBg = document.querySelector('.particle-bg');
+      if (particleBg) {
+        for (let i = 0; i < 20; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 6 + 's';
+          particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+          particleBg.appendChild(particle);
+        }
+      }
+      
+      // 鼠标跟随效果
+      document.addEventListener('mousemove', (e) => {
+        const cursor = document.querySelector('.cursor-glow');
+        if (!cursor) {
+          const glowCursor = document.createElement('div');
+          glowCursor.className = 'cursor-glow';
+          glowCursor.style.cssText = `
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+          `;
+          document.body.appendChild(glowCursor);
+        }
+        
+        const glowElement = document.querySelector('.cursor-glow');
+        if (glowElement) {
+          glowElement.style.left = e.clientX - 10 + 'px';
+          glowElement.style.top = e.clientY - 10 + 'px';
+        }
+      });
+      
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+      
+      // 动态计数效果
+      const countElement = document.querySelector('.count-animation');
+      if (countElement) {
+        const finalCount = 2847;
+        let currentCount = 0;
+        const increment = finalCount / 100;
+        
+        const countInterval = setInterval(() => {
+          currentCount += increment;
+          if (currentCount >= finalCount) {
+            currentCount = finalCount;
+            clearInterval(countInterval);
+          }
+          countElement.textContent = Math.floor(currentCount).toLocaleString();
+        }, 30);
+      }
+    });
+  </script>
+
+ </body>
+ 
+ <script>
+   // 滚动reveal效果和交互功能
+   document.addEventListener('DOMContentLoaded', () => {
+     const revealObserverOptions = {
+       threshold: 0.1,
+       rootMargin: '0px 0px -50px 0px'
+     };
+     
+     const revealObserver = new IntersectionObserver((entries) => {
+       entries.forEach(entry => {
+         if (entry.isIntersecting) {
+           entry.target.classList.add('revealed');
+         }
+       });
+     }, revealObserverOptions);
+     
+           // 观察所有需要reveal的元素
+      const revealElements = document.querySelectorAll('.scroll-reveal');
+      revealElements.forEach(el => revealObserver.observe(el));
+      
+      // 八字计算功能
+      initBaziCalculator();
+      
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    });
+    
+    // 八字计算器初始化
+    function initBaziCalculator() {
+      // 初始化年份选项
+      const yearSelect = document.getElementById('birthYear');
+      const currentYear = new Date().getFullYear();
+      for (let year = currentYear; year >= 1950; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year + '年';
+        yearSelect.appendChild(option);
+      }
+      
+      // 初始化月份选项
+      const monthSelect = document.getElementById('birthMonth');
+      const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+      months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index + 1;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+      });
+      
+      // 初始化日期选项
+      const daySelect = document.getElementById('birthDay');
+      for (let day = 1; day <= 31; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day + '日';
+        daySelect.appendChild(option);
+      }
+      
+      // 性别选择逻辑
+      const genderRadios = document.querySelectorAll('input[name="gender"]');
+      genderRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          // 重置所有样式
+          document.querySelectorAll('.gender-label').forEach(lb=>lb.classList.remove('selected','selected-male','selected-female'));
+          document.querySelectorAll('.gender-radio').forEach(el => {
+            el.classList.remove('border-deity-purple', 'border-deity-pink');
+            el.classList.add('border-gray-300');
+            el.querySelector('div').classList.remove('opacity-100');
+            el.querySelector('div').classList.add('opacity-0');
+          });
+          
+          // 设置选中样式
+          const label = this.parentElement; // label wrapper
+          const radioDiv = label.querySelector('.gender-radio');
+          const innerDiv = radioDiv.querySelector('div');
+          if (this.value === 'male') {
+            radioDiv.classList.add('border-deity-purple');
+            radioDiv.classList.remove('border-gray-300');
+            label.classList.add('selected','selected-male');
+          } else {
+            radioDiv.classList.add('border-deity-pink');
+            radioDiv.classList.remove('border-gray-300');
+            label.classList.add('selected','selected-female');
+          }
+          innerDiv.classList.add('opacity-100');
+          innerDiv.classList.remove('opacity-0');
+        });
+      });
+      
+      // 让自定义圆圈也可点击选中
+      document.querySelectorAll('.gender-radio').forEach(circle => {
+        circle.addEventListener('click', () => {
+          const input = circle.previousElementSibling; // 对应隐藏 input
+          if (input && input.checked === false) {
+            input.checked = true;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      });
+      
+      // 表单提交逻辑
+      document.getElementById('baziForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+          year: document.getElementById('birthYear').value,
+          month: document.getElementById('birthMonth').value,
+          day: document.getElementById('birthDay').value,
+          hour: document.getElementById('birthHour').value,
+          gender: document.querySelector('input[name="gender"]:checked')?.value
+        };
+        
+        // 验证表单
+        if (!formData.year || !formData.month || !formData.day || !formData.hour || !formData.gender) {
+          alert('请填写完整的生辰信息');
+          return;
+        }
+        
+        // 显示计算动画
+        showCalculatingAnimation();
+        
+        // 模拟计算过程
+        setTimeout(() => {
+          const result = calculateGuardian(formData);
+          showResult(result);
+        }, 2000);
+      });
+    }
+    
+    // 显示计算动画
+    function showCalculatingAnimation() {
+      const defaultContent = document.getElementById('defaultContent');
+      
+      defaultContent.innerHTML = `
+        <div class="text-center">
+          <div class="text-6xl mb-4 animate-spin">🔮</div>
+          <h3 class="text-xl font-bold mb-2 text-gray-800">AI正在计算中...</h3>
+          <p class="text-gray-600 text-sm mb-4">分析你的五行属性与守护神匹配</p>
+          <div class="flex justify-center space-x-1">
+            <div class="w-2 h-2 bg-deity-purple rounded-full animate-bounce"></div>
+            <div class="w-2 h-2 bg-deity-pink rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+            <div class="w-2 h-2 bg-deity-gold rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // 计算守护神
+    function calculateGuardian(formData) {
+      const guardians = [
+        {
+          name: '观音菩萨',
+          avatar: '🧘‍♀️',
+          element: '水',
+          personality: '慈悲善良，智慧深邃，善于倾听他人心声，具有强大的包容力和治愈能力。',
+          power: '情绪调节、心灵治愈、智慧启发、化解困厄、增强直觉力。',
+          advice: '多行善事，保持内心平静，适合从事帮助他人的工作，常念慈悲咒语。'
+        },
+        {
+          name: '文殊菩萨',
+          avatar: '🐉',
+          element: '火',
+          personality: '智慧超群，思维敏锐，善于学习和传授知识，具有强烈的求知欲。',
+          power: '增强智慧、提升学习能力、开发创造力、增强记忆力、启发灵感。',
+          advice: '多读书学习，保持好奇心，适合从事教育、研究类工作，常诵智慧经文。'
+        },
+        {
+          name: '关公',
+          avatar: '⚡',
+          element: '金',
+          personality: '正直勇敢，忠诚守信，具有强烈的正义感和责任心，意志坚定。',
+          power: '增强勇气、提升领导力、保护安全、增强正义感、驱除邪恶。',
+          advice: '坚持正义，诚信待人，适合从事管理、执法类工作，常念正气咒语。'
+        },
+        {
+          name: '妈祖',
+          avatar: '🌸',
+          element: '土',
+          personality: '温柔慈祥，善于照顾他人，具有强大的母性光辉和保护欲。',
+          power: '平安守护、家庭和谐、旅行平安、事业顺利、身体健康。',
+          advice: '关爱家人，注重健康，适合从事服务、医疗类工作，常祈求平安。'
+        },
+        {
+          name: '地藏王菩萨',
+          avatar: '🙏',
+          element: '木',
+          personality: '慈悲坚定，愿力深厚，具有强大的救度众生的决心和毅力。',
+          power: '消除业障、增强毅力、化解困难、提升修行、获得内心平静。',
+          advice: '坚持修行，帮助他人，适合从事慈善、宗教类工作，常念地藏经。'
+        }
+      ];
+      
+      // 简化的五行计算逻辑（基于出生年份和性别）
+      const year = parseInt(formData.year);
+      const gender = formData.gender;
+      const hour = formData.hour;
+      
+      let index = 0;
+      if (year % 5 === 0) index = 0; // 观音菩萨
+      else if (year % 5 === 1) index = 1; // 文殊菩萨
+      else if (year % 5 === 2) index = 2; // 关公
+      else if (year % 5 === 3) index = 3; // 妈祖
+      else index = 4; // 地藏王菩萨
+      
+      // 根据性别和时辰调整
+      if (gender === 'female' && (hour.includes('子') || hour.includes('午'))) {
+        index = 0; // 女性子午时多匹配观音
+      } else if (gender === 'male' && (hour.includes('寅') || hour.includes('申'))) {
+        index = 2; // 男性寅申时多匹配关公
+      }
+      
+      return guardians[index];
+    }
+    
+    // 显示结果
+    function showResult(guardian) {
+      const defaultContent = document.getElementById('defaultContent');
+      const resultDiv = document.getElementById('calculationResult');
+      
+      // 更新结果内容
+      document.getElementById('guardianAvatar').textContent = guardian.avatar;
+      document.getElementById('guardianName').textContent = guardian.name;
+      document.getElementById('guardianElement').textContent = `五行属性：${guardian.element}`;
+      document.getElementById('personality').textContent = guardian.personality;
+      document.getElementById('guardianPower').textContent = guardian.power;
+      document.getElementById('luckyAdvice').textContent = guardian.advice;
+      
+      // 切换显示
+      defaultContent.classList.add('hidden');
+      resultDiv.classList.remove('hidden');
+      
+      // 添加动画效果
+      resultDiv.style.opacity = '0';
+      resultDiv.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        resultDiv.style.transition = 'all 0.6s ease-out';
+        resultDiv.style.opacity = '1';
+        resultDiv.style.transform = 'translateY(0)';
+      }, 100);
+    }
+ </script>
+ 
+ </html>
