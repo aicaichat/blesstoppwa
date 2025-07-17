@@ -1,0 +1,77 @@
+{
+  "name": "BlessTop 观音无畏布施",
+  "short_name": "BlessTop",
+  "description": "千年古寺开光沉香手串，AI-Native 神仙伴侣",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0F0F",
+  "theme_color": "#F6AD55",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "lifestyle",
+    "health",
+    "meditation"
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/sanctify.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "扫珠验真",
+      "short_name": "验真",
+      "description": "NFC 扫描验证手串真伪",
+      "url": "/sanctify",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "情绪急救",
+      "short_name": "急救",
+      "description": "30-90秒快速情绪急救",
+      "url": "/breathe",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "神仙对话",
+      "short_name": "对话",
+      "description": "与千年沉香之灵对话",
+      "url": "/mirror",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+} 

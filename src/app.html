@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN" %sveltekit.theme%>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="description" content="千年古寺开光的沉香手串 × AI-Native 神仙伴侣" />
+		<meta name="theme-color" content="#0F0F0F" />
+		
+		<!-- Open Graph -->
+		<meta property="og:title" content="交个神仙朋友" />
+		<meta property="og:description" content="30秒生成本地AI神仙人格，离线终身陪伴" />
+		<meta property="og:type" content="website" />
+		<meta property="og:image" content="%sveltekit.assets%/og-image.jpg" />
+		
+		<!-- PWA -->
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/icon-192x192.png" />
+
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover" class="bg-black text-white">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html> 

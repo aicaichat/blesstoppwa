@@ -1,0 +1,669 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/*
+交个神仙朋友 PWA 世界级视觉系统 v3.0
+基于 bless-friend-theme 设计语言
+融合神秘主义与现代技术的终极体验
+*/
+
+/* 🌌 世界级神秘色彩体系 - 基于五行能量光谱 */
+:root {
+  /* 🌟 核心神秘色彩 - 基于自然能量光谱 */
+  --mystic-void: #0a0a0f;
+  --mystic-depth: #1a1a2e;
+  --mystic-shadow: #16213e;
+  --mystic-twilight: #0f3460;
+  --mystic-ocean: #533483;
+  
+  /* 🎆 五行能量色彩系统 */
+  --element-wood: #2dd4bf;    /* 青龙 - 东方木 */
+  --element-fire: #f97316;    /* 朱雀 - 南方火 */
+  --element-earth: #fbbf24;   /* 麒麟 - 中央土 */
+  --element-metal: #e5e7eb;   /* 白虎 - 西方金 */
+  --element-water: #3b82f6;   /* 玄武 - 北方水 */
+  
+  /* 🌟 终极神性光谱 */
+  --divine-aurora: #ff006e;   /* 极光粉 */
+  --divine-cosmos: #8338ec;   /* 宇宙紫 */
+  --divine-celestial: #3a86ff; /* 天界蓝 */
+  --divine-ethereal: #06ffa5; /* 以太绿 */
+  --divine-radiance: #ffbe0b; /* 神辉金 */
+  --divine-mystique: #fb5607; /* 神秘橙 */
+  
+  /* 🔮 情感响应色彩 */
+  --emotion-hope: #10b981;
+  --emotion-wisdom: #8b5cf6;
+  --emotion-passion: #ef4444;
+  --emotion-serenity: #06b6d4;
+  --emotion-abundance: #f59e0b;
+  --emotion-mystery: #6366f1;
+  
+  /* 🎨 终极渐变系统 */
+  --gradient-cosmic-nebula: linear-gradient(135deg, 
+    var(--divine-aurora) 0%, 
+    var(--divine-cosmos) 25%, 
+    var(--divine-celestial) 50%, 
+    var(--divine-ethereal) 75%, 
+    var(--divine-radiance) 100%);
+    
+  --gradient-divine-portal: radial-gradient(circle at center, 
+    rgba(255, 0, 110, 0.8) 0%, 
+    rgba(131, 56, 236, 0.6) 30%, 
+    rgba(58, 134, 255, 0.4) 60%, 
+    transparent 100%);
+    
+  --gradient-mystic-flow: linear-gradient(45deg, 
+    var(--element-water) 0%, 
+    var(--element-wood) 25%, 
+    var(--element-fire) 50%, 
+    var(--element-earth) 75%, 
+    var(--element-metal) 100%);
+    
+  --gradient-aurora-dance: linear-gradient(270deg, 
+    #ff006e 0%, 
+    #8338ec 20%, 
+    #3a86ff 40%, 
+    #06ffa5 60%, 
+    #ffbe0b 80%, 
+    #fb5607 100%);
+    
+  --gradient-ethereal-mist: radial-gradient(ellipse at top, 
+    rgba(131, 56, 236, 0.3) 0%, 
+    rgba(58, 134, 255, 0.2) 50%, 
+    transparent 100%);
+    
+  --gradient-celestial-veil: conic-gradient(from 0deg at 50% 50%, 
+    var(--divine-aurora) 0deg, 
+    var(--divine-cosmos) 72deg, 
+    var(--divine-celestial) 144deg, 
+    var(--divine-ethereal) 216deg, 
+    var(--divine-radiance) 288deg, 
+    var(--divine-aurora) 360deg);
+    
+  /* 🔥 终极阴影光效系统 */
+  --shadow-divine-glow: 
+    0 0 20px rgba(255, 0, 110, 0.4),
+    0 0 40px rgba(131, 56, 236, 0.3),
+    0 0 60px rgba(58, 134, 255, 0.2),
+    0 20px 40px rgba(0, 0, 0, 0.1);
+    
+  --shadow-mystic-aura: 
+    0 0 30px rgba(139, 92, 246, 0.5),
+    0 0 60px rgba(16, 185, 129, 0.3),
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    
+  --shadow-cosmic-depth: 
+    0 8px 32px rgba(255, 0, 110, 0.15),
+    0 16px 64px rgba(131, 56, 236, 0.1),
+    0 24px 96px rgba(58, 134, 255, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+    
+  --shadow-ethereal-float: 
+    0 4px 20px rgba(6, 255, 165, 0.3),
+    0 8px 40px rgba(255, 190, 11, 0.2),
+    0 16px 80px rgba(251, 86, 7, 0.1),
+    0 1px 4px rgba(255, 255, 255, 0.2) inset;
+    
+  /* ⚡ 高级动画缓动系统 */
+  --ease-divine-flow: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-mystic-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-cosmic-drift: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-ethereal-float: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-celestial-pulse: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-aurora-dance: cubic-bezier(0.645, 0.045, 0.355, 1);
+  
+  /* 🌊 流动性设计变量 */
+  --border-radius-flow: clamp(12px, 2vw, 24px);
+  --border-radius-cosmic: clamp(16px, 3vw, 32px);
+  --border-radius-divine: clamp(20px, 4vw, 40px);
+  
+  /* ✨ 玻璃拟态进化 */
+  --glass-ultra-blur: blur(40px) saturate(180%) brightness(110%);
+  --glass-divine-blur: blur(30px) saturate(200%) contrast(120%);
+  --glass-mystic-blur: blur(25px) saturate(150%) brightness(105%);
+  
+  /* 🎯 字体尺寸响应式比例 */
+  --font-display-giant: clamp(4rem, 12vw, 8rem);
+  --font-display-hero: clamp(2.5rem, 8vw, 5rem);
+  --font-display-large: clamp(2rem, 6vw, 3.5rem);
+  --font-title-huge: clamp(1.75rem, 5vw, 2.5rem);
+  --font-title-large: clamp(1.5rem, 4vw, 2rem);
+  --font-title-medium: clamp(1.25rem, 3vw, 1.75rem);
+  --font-body-large: clamp(1.125rem, 2vw, 1.25rem);
+  --font-body-medium: clamp(1rem, 1.5vw, 1.125rem);
+  
+  /* 🌊 流动间距系统 */
+  --space-micro: clamp(0.25rem, 0.5vw, 0.5rem);
+  --space-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --space-sm: clamp(0.75rem, 1.5vw, 1rem);
+  --space-md: clamp(1rem, 2vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 3vw, 2rem);
+  --space-xl: clamp(2rem, 4vw, 3rem);
+  --space-2xl: clamp(3rem, 6vw, 4rem);
+  --space-3xl: clamp(4rem, 8vw, 6rem);
+  --space-4xl: clamp(6rem, 12vw, 8rem);
+}
+
+/* 全局样式增强 */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  font-family: 
+    'Inter Variable', 'Inter', 
+    'SF Pro Display', 'SF Pro Text', 
+    'PingFang SC', 'Hiragino Sans GB', 
+    'Source Han Sans SC', 'Noto Sans CJK SC',
+    'Microsoft YaHei UI', 'Microsoft YaHei',
+    -apple-system, BlinkMacSystemFont,
+    'Segoe UI Variable', 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell,
+    sans-serif;
+  overflow-x: hidden;
+  line-height: 1.618; /* 黄金比例行高 */
+  color: var(--mystic-twilight);
+  background: var(--mystic-void);
+  min-height: 100vh;
+  position: relative;
+  font-feature-settings: 
+    'kern' 1,      /* 字距调整 */
+    'liga' 1,      /* 连字 */
+    'calt' 1,      /* 上下文替代 */
+    'ss01' 1;      /* 风格集1 */
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em; /* 微调字间距 */
+}
+
+/* 全局背景系统 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(254, 202, 87, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(196, 181, 253, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.1;
+  z-index: -1;
+  animation: cosmic-drift 20s ease-in-out infinite;
+}
+
+@keyframes cosmic-drift {
+  0%, 100% { 
+    opacity: 0.1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% { 
+    opacity: 0.2;
+    transform: scale(1.05) rotate(180deg);
+  }
+}
+
+/* 星空粒子系统 */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 40% 70%, rgba(255, 190, 11, 0.6), transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(6, 255, 165, 0.4), transparent),
+    radial-gradient(2px 2px at 90% 90%, rgba(131, 56, 236, 0.6), transparent),
+    radial-gradient(1px 1px at 10% 90%, rgba(255, 0, 110, 0.4), transparent);
+  background-repeat: repeat;
+  background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px, 400px 400px, 200px 200px;
+  animation: sparkle 20s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-100px); }
+}
+
+/* 🌟 终极字体类 - 神性展示 */
+.text-divine-giant {
+  font-size: var(--font-display-giant);
+  line-height: 0.9;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  background: var(--gradient-cosmic-nebula);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 50px rgba(255, 0, 110, 0.3);
+  font-feature-settings: 'ss01' 1, 'cv01' 1, 'kern' 1;
+}
+
+.text-cosmic-hero {
+  font-size: var(--font-display-hero);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  background: var(--gradient-aurora-dance);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(131, 56, 236, 0.4);
+}
+
+.text-mystic-display {
+  font-size: var(--font-display-large);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--divine-aurora);
+  text-shadow: 0 0 20px rgba(255, 0, 110, 0.3);
+}
+
+.text-ethereal-title {
+  font-size: var(--font-title-huge);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--divine-celestial);
+  text-shadow: 0 0 15px rgba(58, 134, 255, 0.3);
+}
+
+.text-celestial-subtitle {
+  font-size: var(--font-title-large);
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  color: var(--divine-ethereal);
+  text-shadow: 0 0 10px rgba(6, 255, 165, 0.2);
+}
+
+.text-radiant-body {
+  font-size: var(--font-body-large);
+  line-height: 1.618;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+}
+
+/* 🎨 超级卡片系统 v3.0 */
+.card-divine {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: var(--glass-divine-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-cosmic);
+  box-shadow: var(--shadow-divine-glow);
+  transition: all 0.8s var(--ease-divine-flow);
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-xl);
+}
+
+.card-divine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-cosmic-nebula);
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-divine-flow);
+  pointer-events: none;
+}
+
+.card-divine:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-ethereal-float);
+}
+
+.card-divine:hover::before {
+  opacity: 0.1;
+}
+
+.card-mystic {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: var(--glass-mystic-blur);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-flow);
+  box-shadow: var(--shadow-cosmic-depth);
+  transition: all 0.6s var(--ease-ethereal-float);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-mystic:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-mystic-aura);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 🌟 神性按钮系统 */
+.btn-divine-primary {
+  background: var(--gradient-cosmic-nebula);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-flow);
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-body-large);
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  transition: all 0.6s var(--ease-ethereal-float);
+  position: relative;
+  overflow: hidden;
+  text-transform: none;
+  box-shadow: var(--shadow-cosmic-depth);
+  min-height: 48px; /* 触摸友好 */
+}
+
+.btn-divine-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.8s var(--ease-aurora-dance);
+}
+
+.btn-divine-primary:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: var(--shadow-ethereal-float);
+}
+
+.btn-divine-primary:hover::before {
+  left: 100%;
+}
+
+.btn-divine-primary:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-mystic-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--divine-ethereal);
+  border: 2px solid var(--divine-ethereal);
+  border-radius: var(--border-radius-flow);
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-body-large);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s var(--ease-ethereal-float);
+  backdrop-filter: blur(10px);
+  min-height: 48px;
+}
+
+.btn-mystic-secondary:hover {
+  background: var(--divine-ethereal);
+  color: var(--mystic-void);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-mystic-aura);
+}
+
+/* 🎭 特殊效果类 */
+.glass-divine {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: var(--glass-divine-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-mystic {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: var(--glass-mystic-blur);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.shadow-divine {
+  box-shadow: var(--shadow-divine-glow);
+}
+
+.shadow-mystic {
+  box-shadow: var(--shadow-mystic-aura);
+}
+
+.shadow-cosmic {
+  box-shadow: var(--shadow-cosmic-depth);
+}
+
+.shadow-ethereal {
+  box-shadow: var(--shadow-ethereal-float);
+}
+
+/* 🌊 动画效果库 */
+.animate-divine-float {
+  animation: divine-float 6s var(--ease-ethereal-float) infinite;
+}
+
+@keyframes divine-float {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% { 
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 3s var(--ease-celestial-pulse) infinite;
+}
+
+@keyframes cosmic-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.animate-mystic-glow {
+  animation: mystic-glow 4s var(--ease-ethereal-float) infinite alternate;
+}
+
+@keyframes mystic-glow {
+  from { 
+    filter: brightness(1) saturate(1);
+    text-shadow: 0 0 10px currentColor;
+  }
+  to { 
+    filter: brightness(1.2) saturate(1.3);
+    text-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}
+
+.animate-aurora-dance {
+  animation: aurora-dance 8s linear infinite;
+}
+
+@keyframes aurora-dance {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-ethereal-spin {
+  animation: ethereal-spin 20s linear infinite;
+}
+
+@keyframes ethereal-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 🎯 特殊交互效果 */
+.hover-divine {
+  transition: all 0.6s var(--ease-ethereal-float);
+}
+
+.hover-divine:hover {
+  transform: translateY(-8px) scale(1.02);
+  filter: brightness(1.1);
+}
+
+.hover-mystic {
+  transition: all 0.4s var(--ease-celestial-pulse);
+}
+
+.hover-mystic:hover {
+  transform: translateY(-4px);
+  filter: saturate(1.2);
+}
+
+.hover-cosmic {
+  transition: all 0.5s var(--ease-cosmic-drift);
+}
+
+.hover-cosmic:hover {
+  transform: scale(1.05) rotate(2deg);
+  filter: brightness(1.15);
+}
+
+/* 📱 移动端优化 */
+@media (max-width: 768px) {
+  .card-divine {
+    padding: var(--space-lg);
+  }
+  
+  .btn-divine-primary,
+  .btn-mystic-secondary {
+    width: 100%;
+    min-height: 52px; /* 移动端更大的触摸目标 */
+  }
+  
+  /* 减少视觉效果以提升性能 */
+  body::before,
+  body::after {
+    opacity: 0.05;
+  }
+  
+  .card-divine,
+  .card-mystic {
+    backdrop-filter: blur(15px); /* 减少模糊效果 */
+  }
+}
+
+/* 🎨 自定义 Tailwind 扩展 */
+@layer components {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-aurora-dance);
+  }
+  
+  .backdrop-blur-subtle {
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ⚡ 性能优化 */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* 🎭 特殊状态 */
+.loading-divine {
+  background: var(--gradient-cosmic-nebula);
+  background-size: 300% 300%;
+  animation: aurora-dance 2s ease-in-out infinite;
+}
+
+.success-glow {
+  box-shadow: 0 0 30px var(--emotion-hope);
+  animation: success-pulse 1s ease-out;
+}
+
+@keyframes success-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.error-glow {
+  box-shadow: 0 0 30px var(--emotion-passion);
+  animation: error-shake 0.5s ease-in-out;
+}
+
+@keyframes error-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* 🔮 专属品牌效果 */
+.brand-glow {
+  position: relative;
+}
+
+.brand-glow::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--gradient-celestial-veil);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-ethereal-float);
+}
+
+.brand-glow:hover::after {
+  opacity: 0.7;
+  animation: ethereal-spin 20s linear infinite;
+}
+
+/* 🌟 最终完善 */
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--divine-aurora);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--mystic-depth);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-cosmic-nebula);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gradient-aurora-dance);
+} 

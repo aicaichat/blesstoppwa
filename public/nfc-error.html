@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>访问出错 - 心无挂碍般若文创</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Ma Shan Zheng', cursive;
+            background-image: url('https://package-app-storage.oss-cn-shenzhen.aliyuncs.com/h5/open_light_bg2.webp');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .error-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .retry-btn {
+            background: linear-gradient(45deg, #ed8936, #dd7324);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
+        }
+        .secondary-btn {
+            background: transparent;
+            color: #ed8936;
+            padding: 15px 30px;
+            border: 2px solid #ed8936;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .secondary-btn:hover {
+            background: #ed8936;
+            color: white;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="error-card rounded-2xl p-8 w-full max-w-md text-center">
+        <!-- 错误图标 -->
+        <div class="mb-6">
+            <i class="fas fa-exclamation-triangle text-6xl text-red-500 pulse"></i>
+        </div>
+        
+        <!-- 错误标题 -->
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">访问受限</h1>
+        
+        <!-- 错误信息 -->
+        <div class="mb-6">
+            <p id="errorMessage" class="text-gray-600 text-lg mb-4">
+                很抱歉，您的访问请求被拒绝了
+            </p>
+        </div>
+        
+        <!-- 可能的原因 -->
+        <div class="bg-orange-50 rounded-lg p-4 mb-6 text-left">
+            <h3 class="font-semibold text-orange-800 mb-3">
+                <i class="fas fa-lightbulb mr-2"></i>可能的原因：
+            </h3>
+            <ul class="text-sm text-orange-700 space-y-2">
+                <li>• NFC标签令牌已过期</li>
+                <li>• 网络连接问题</li>
+                <li>• 系统临时维护</li>
+                <li>• 访问频率过于频繁</li>
+            </ul>
+        </div>
+        
+        <!-- 解决方案 -->
+        <div class="bg-blue-50 rounded-lg p-4 mb-6 text-left">
+            <h3 class="font-semibold text-blue-800 mb-3">
+                <i class="fas fa-tools mr-2"></i>解决方案：
+            </h3>
+            <ul class="text-sm text-blue-700 space-y-2">
+                <li>• 重新扫描NFC标签</li>
+                <li>• 检查网络连接</li>
+                <li>• 稍后再试</li>
+                <li>• 联系客服获取帮助</li>
+            </ul>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="space-y-3">
+            <button onclick="retryAccess()" class="retry-btn">
+                <i class="fas fa-redo mr-2"></i>重新尝试
+            </button>
+            
+            <button onclick="contactSupport()" class="secondary-btn">
+                <i class="fas fa-headset mr-2"></i>联系客服
+            </button>
+            
+            <button onclick="goHome()" class="secondary-btn">
+                <i class="fas fa-home mr-2"></i>返回首页
+            </button>
+        </div>
+        
+        <!-- 技术信息 -->
+        <div class="mt-6 p-3 bg-gray-50 rounded-lg">
+            <details class="text-left">
+                <summary class="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-info-circle mr-2"></i>技术信息
+                </summary>
+                <div class="mt-2 text-xs text-gray-500 font-mono">
+                    <p>时间: <span id="errorTime"></span></p>
+                    <p>错误类型: <span id="errorType">NFC_ACCESS_DENIED</span></p>
+                    <p>用户代理: <span id="userAgent"></span></p>
+                </div>
+            </details>
+        </div>
+        
+        <!-- 二维码支持 -->
+        <div class="mt-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+            <p class="text-sm text-gray-600 mb-2">
+                <i class="fas fa-qrcode mr-2"></i>没有NFC？
+            </p>
+            <p class="text-xs text-gray-500">
+                请扫描手串包装上的二维码，或手动输入手串编号访问
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取错误信息
+            const urlParams = new URLSearchParams(window.location.search);
+            const errorMessage = urlParams.get('message');
+            
+            if (errorMessage) {
+                document.getElementById('errorMessage').textContent = decodeURIComponent(errorMessage);
+            }
+            
+            // 设置技术信息
+            document.getElementById('errorTime').textContent = new Date().toLocaleString('zh-CN');
+            document.getElementById('userAgent').textContent = navigator.userAgent.substring(0, 50) + '...';
+            
+            // 记录错误到控制台
+            console.error('NFC访问错误:', errorMessage);
+        });
+        
+        // 重新尝试访问
+        function retryAccess() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.reload();
+            }
+        }
+        
+        // 联系客服
+        function contactSupport() {
+            // 可以根据实际情况修改联系方式
+            const phone = '400-123-4567';
+            const wechat = 'BlessSupport';
+            
+            if (confirm(`联系客服方式：\n\n📞 电话：${phone}\n💬 微信：${wechat}\n\n是否拨打电话？`)) {
+                window.location.href = `tel:${phone}`;
+            }
+        }
+        
+        // 返回首页
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        // 自动重试计时器
+        let retryCountdown = 30;
+        const retryInterval = setInterval(() => {
+            retryCountdown--;
+            if (retryCountdown <= 0) {
+                clearInterval(retryInterval);
+                // 自动重试
+                retryAccess();
+            }
+        }, 1000);
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'r':
+                case 'R':
+                    retryAccess();
+                    break;
+                case 'h':
+                case 'H':
+                    goHome();
+                    break;
+                case 'c':
+                case 'C':
+                    contactSupport();
+                    break;
+            }
+        });
+        
+        // 防止页面缓存
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html> 
