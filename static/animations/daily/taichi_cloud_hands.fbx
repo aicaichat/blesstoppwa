@@ -1,0 +1,90 @@
+# 这是一个模拟的太极云手动画FBX文件
+# 实际应该包含太极云手的3D动画数据
+# 包含缓慢的手臂流动动作和身体协调
+# 动画时长: 6秒
+# 帧率: 30fps
+# 总帧数: 180帧
+
+# FBX文件头
+FBXHeaderExtension:  {
+	FBXHeaderVersion: 1003
+	FBXVersion: 7400
+	CreationTimeStamp:  {
+		Version: 1000
+		Year: 2025
+		Month: 1
+		Day: 18
+		Hour: 0
+		Minute: 0
+		Second: 0
+		Millisecond: 0
+	}
+	Creator: "Mixamo Animation System"
+	SceneInfo: "SceneInfo::GlobalInfo", "UserData" {
+		Type: "UserData"
+		Version: 100
+		MetaData:  {
+			Version: 100
+			Title: "Tai Chi Cloud Hands Animation"
+			Subject: "Traditional Chinese martial arts movement"
+			Author: "Bless Top PWA Animation System"
+			Keywords: "taichi,cloud,hands,martial arts"
+			Revision: ""
+			Comment: "Slow flowing movement characteristic of tai chi"
+		}
+	}
+}
+
+# 骨骼动画数据（太极云手动作）
+Objects:  {
+	AnimationStack: 4611686018427388175, "AnimStack::Take 001", "" {
+		Properties70:  {
+			P: "Description", "KString", "", "", "Take 001"
+			P: "LocalStart", "KTime", "Time", "",1924423250
+			P: "LocalStop", "KTime", "Time", "",230930790000
+			P: "ReferenceStart", "KTime", "Time", "",1924423250
+			P: "ReferenceStop", "KTime", "Time", "",230930790000
+		}
+	}
+	
+	# 混合手臂动作关键帧
+	# 左臂云手动作
+	AnimationCurveNode: 4611686018427388528, "AnimCurveNode::LeftArm", "" {
+		Properties70:  {
+			P: "d|X", "Number", "", "A",0
+			P: "d|Y", "Number", "", "A",0
+			P: "d|Z", "Number", "", "A",0
+		}
+		# 缓慢向上划圆动作
+		# 开始位置 -> 向外 -> 向上 -> 向内 -> 回到起始
+	}
+	
+	# 右臂云手动作
+	AnimationCurveNode: 4611686018427388529, "AnimCurveNode::RightArm", "" {
+		Properties70:  {
+			P: "d|X", "Number", "", "A",0
+			P: "d|Y", "Number", "", "A",0  
+			P: "d|Z", "Number", "", "A",0
+		}
+		# 与左臂相反方向的云手动作
+	}
+	
+	# 腰部旋转
+	AnimationCurveNode: 4611686018427388530, "AnimCurveNode::Spine", "" {
+		Properties70:  {
+			P: "d|X", "Number", "", "A",0
+			P: "d|Y", "Number", "", "A",5  # 轻微腰部旋转
+			P: "d|Z", "Number", "", "A",0
+		}
+	}
+	
+	# 重心转移
+	AnimationCurveNode: 4611686018427388531, "AnimCurveNode::Hips", "" {
+		Properties70:  {
+			P: "d|X", "Number", "", "A",0
+			P: "d|Y", "Number", "", "A",0
+			P: "d|Z", "Number", "", "A",0
+		}
+		# 左右重心转移动作
+	}
+} 

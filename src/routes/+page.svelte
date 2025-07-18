@@ -1,355 +1,592 @@
+<!-- 新的极简主页设计 -->
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { userSession, trackEvent, checkCapabilities } from '$lib/stores/appState.js';
+	import { userSession, trackEvent } from '$lib/stores/appState.js';
 
-	let showNFCPrompt = false;
-	let nfcSupported = false;
-	let isScanning = false;
+	let isReady = false;
+	let currentTime = '';
+	let greeting = '';
 
-	onMount(async () => {
-		if (!browser) return;
+	onMount(() => {
+		if (browser) {
+			isReady = true;
+			updateTime();
+			setInterval(updateTime, 1000);
+			generateGreeting();
 
-		// 检查设备能力
-		const capabilities = checkCapabilities();
-		nfcSupported = capabilities.hasNFC;
-
-		// 性能监控
-		trackEvent('page_view', { page: 'home' });
+			// 预加载关键资源
+			preloadAssets();
+		}
 	});
 
-	async function handleNFCTag(message) {
-		isScanning = true;
-		trackEvent('nfc_scan_start');
-
-		try {
-			// 解析 NFC 消息
-			const records = message.records;
-			let nfcId = null;
-
-			for (const record of records) {
-				if (record.recordType === 'url') {
-					const url = new TextDecoder().decode(record.data);
-					const urlParams = new URLSearchParams(url.split('?')[1]);
-					nfcId = urlParams.get('id');
-					break;
-				}
-			}
-
-			if (nfcId) {
-				// 跳转到验真页面
-				if (browser) {
-					try {
-						userSession.update(state => ({
-							...state,
-							nfcId
-						}));
-					} catch (e) {
-						console.warn('Store update error:', e);
-					}
-				}
-				
-				trackEvent('nfc_scan_success', { nfcId });
-				await goto(`/sanctify?id=${nfcId}`);
-			} else {
-				throw new Error('Invalid NFC tag format');
-			}
-
-		} catch (error) {
-			console.error('NFC processing failed:', error);
-			trackEvent('nfc_scan_error', { error: error.message });
-			showNFCPrompt = true;
-		} finally {
-			isScanning = false;
-		}
+	function updateTime() {
+		const now = new Date();
+		currentTime = now.toLocaleTimeString('zh-CN', { 
+			hour: '2-digit', 
+			minute: '2-digit' 
+		});
 	}
 
-	function scanNFC() {
-		if (!nfcSupported) {
-			// 降级到手动输入
-			showNFCPrompt = true;
-			return;
-		}
-		
-		// 简化的NFC扫描
-		isScanning = true;
-		setTimeout(() => {
-			isScanning = false;
-			showNFCPrompt = true;
-		}, 2000);
+	function generateGreeting() {
+		const hour = new Date().getHours();
+		if (hour < 6) greeting = '夜深了，愿你安眠';
+		else if (hour < 12) greeting = '愿你有个美好的上午';
+		else if (hour < 18) greeting = '愿午后时光温暖如春';
+		else greeting = '愿晚霞为你带来宁静';
 	}
 
+	async function preloadAssets() {
+		// 预加载关键页面
+		const pages = ['/awake', '/breathe', '/mirror'];
+		pages.forEach(page => {
+			const link = document.createElement('link');
+			link.rel = 'prefetch';
+			link.href = page;
+			document.head.appendChild(link);
+		});
+	}
+
+	// 主要入口 - 开始体验
 	function startExperience() {
-		trackEvent('manual_start');
+		trackEvent('experience_start', { 
+			time: new Date().toISOString(),
+			source: 'homepage'
+		});
+		
+		// 直接进入时长选择
 		goto('/awake');
 	}
 
-	function handleManualId(event) {
-		const nfcId = event.target.value.trim();
-		if (nfcId.length >= 8) {
-			if (browser) {
-				try {
-					userSession.update(state => ({
-						...state,
-						nfcId
-					}));
-				} catch (e) {
-					console.warn('Store update error:', e);
-				}
-			}
-			goto(`/sanctify?id=${nfcId}`);
-		}
+	// NFC 扫描入口
+	function scanBracelet() {
+		trackEvent('nfc_scan_attempt', { source: 'homepage' });
+		goto('/sanctify');
+	}
+
+	// 快速情绪急救
+	function quickRescue() {
+		userSession.update(session => ({ ...session, duration: 30 }));
+		trackEvent('quick_rescue', { duration: 30 });
+		goto('/breathe');
+	}
+
+	// 太极演示
+	function goToTaichiDemo() {
+		trackEvent('taichi_demo_click', { source: 'homepage' });
+		goto('/taichi-demo');
 	}
 </script>
 
 <svelte:head>
 	<title>交个神仙朋友 - 千年古寺开光沉香手串</title>
-	<meta name="description" content="碰一碰手串，30秒生成本地AI神仙人格，离线终身陪伴" />
+	<meta name="description" content="30秒生成AI神仙人格，离线终身陪伴。一条开光手串，一位专属神仙。" />
 </svelte:head>
 
-<!-- 主要内容 -->
-<div class="min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
-	<!-- 神性装饰元素 -->
-	<div class="absolute top-20 left-10 w-32 h-32 animate-divine-float opacity-30">
-		<div class="w-full h-full rounded-full bg-gradient-to-br from-divine-aurora to-divine-cosmos shadow-divine"></div>
-	</div>
-	<div class="absolute bottom-20 right-10 w-24 h-24 animate-cosmic-pulse opacity-40">
-		<div class="w-full h-full rounded-full bg-gradient-to-br from-divine-ethereal to-divine-radiance shadow-cosmic"></div>
-	</div>
-	<div class="absolute top-1/3 right-20 w-16 h-16 animate-ethereal-spin opacity-25">
-		<div class="w-full h-full rounded-full bg-gradient-to-br from-element-wood to-element-fire shadow-mystic"></div>
+<!-- 主容器 -->
+<div class="home-container">
+	<!-- 背景粒子效果 -->
+	<div class="particles" aria-hidden="true">
+		{#each Array(12) as _, i}
+			<div class="particle" style="--delay: {i * 0.8}s; --duration: {8 + i}s;"></div>
+		{/each}
 	</div>
 
-	<!-- 标题区域 -->
-	<div class="text-center mb-16 relative">
-		<div class="absolute inset-0 -z-10">
-			<div class="w-full h-full bg-gradient-to-r from-transparent via-divine-aurora/10 to-transparent animate-aurora-dance"></div>
-		</div>
-		
-		<h1 class="text-cosmic-hero mb-6 animate-mystic-glow">
-			交个神仙朋友
-		</h1>
-		
-		<div class="space-y-3">
-			<p class="text-ethereal-title opacity-90">
-				千年古寺开光的沉香手串
-			</p>
-			<p class="text-celestial-subtitle opacity-80">
-				30秒生成本地AI神仙人格，离线终身陪伴
-			</p>
-		</div>
-		
-		<!-- 神性分割线 -->
-		<div class="mt-8 flex items-center justify-center">
-			<div class="h-px w-20 bg-gradient-to-r from-transparent to-divine-aurora"></div>
-			<div class="mx-4 text-divine-radiance text-2xl animate-divine-float">✦</div>
-			<div class="h-px w-20 bg-gradient-to-l from-transparent to-divine-aurora"></div>
-		</div>
-	</div>
-
-	<!-- NFC 扫描区域 -->
-	{#if nfcSupported && !showNFCPrompt}
-		<div class="mb-12 text-center">
-			<div class="relative inline-block group">
-				<button
-					on:click={scanNFC}
-					disabled={isScanning}
-					class="relative w-40 h-40 rounded-full border-4 border-divine-aurora flex items-center justify-center text-divine-aurora text-4xl font-bold transition-all duration-700 ease-out group-hover:scale-110 group-hover:border-divine-ethereal group-hover:text-divine-ethereal {isScanning ? 'animate-cosmic-pulse' : 'hover-divine'} shadow-divine"
-				>
-					{#if isScanning}
-						<div class="w-12 h-12 border-4 border-current border-t-transparent rounded-full animate-spin"></div>
-					{:else}
-						<span class="text-5xl">📿</span>
-					{/if}
-					
-					<!-- 神性光环 -->
-					<div class="absolute inset-0 rounded-full border-4 border-divine-cosmos opacity-60 animate-cosmic-pulse scale-110"></div>
-					<div class="absolute inset-0 rounded-full border-4 border-divine-ethereal opacity-40 animate-divine-float scale-125"></div>
-				</button>
-				
-				<!-- 扫描波纹效果 -->
-				{#if !isScanning}
-					<div class="absolute inset-0 rounded-full border-4 border-divine-radiance animate-ping opacity-75"></div>
-				{/if}
+	<!-- 主内容 -->
+	<main class="main-content">
+		<!-- 头部时间和问候 -->
+		<header class="app-header">
+			<div class="time-display" class:visible={isReady}>
+				<span class="time">{currentTime}</span>
 			</div>
-			
-			<p class="mt-6 text-radiant-body">
-				{isScanning ? '正在扫描手串...' : '碰一碰你的沉香手串'}
-			</p>
-		</div>
-	{/if}
+			<h1 class="greeting" class:visible={isReady}>
+				{greeting}
+			</h1>
+		</header>
 
-	<!-- 手动输入区域 -->
-	{#if showNFCPrompt || !nfcSupported}
-		<div class="mb-12 w-full max-w-md">
-			<div class="card-divine">
-				<h3 class="text-ethereal-title mb-6 text-center">
-					手串编号
-				</h3>
-				<div class="relative">
-					<input
-						type="text"
-						placeholder="请输入手串编号"
-						on:input={handleManualId}
-						class="w-full p-5 bg-black/30 border-2 border-divine-ethereal/50 rounded-xl text-radiant-body placeholder-divine-ethereal/50 focus:border-divine-ethereal focus:outline-none focus:shadow-ethereal transition-all duration-500 backdrop-blur-sm"
-					/>
-					<div class="absolute top-0 left-0 w-full h-full rounded-xl bg-gradient-to-r from-divine-aurora/5 to-divine-ethereal/5 pointer-events-none"></div>
+		<!-- 核心标题 -->
+		<div class="hero-section">
+			<div class="app-icon">🌟</div>
+			<h2 class="app-title">交个神仙朋友</h2>
+			<p class="app-subtitle">千年古寺开光的沉香手串<br/>30秒生成专属AI神仙人格</p>
+		</div>
+
+		<!-- 主要操作按钮 -->
+		<div class="action-section">
+			<!-- 主要入口 -->
+			<button class="primary-action" on:click={startExperience}>
+				<div class="action-icon">✨</div>
+				<div class="action-content">
+					<span class="action-title">开始体验</span>
+					<span class="action-desc">选择时长，开启心灵之旅</span>
 				</div>
-				<p class="text-sm text-divine-ethereal/70 mt-4 text-center">
-					编号通常在手串包装或证书上
-				</p>
+				<div class="action-arrow">→</div>
+			</button>
+
+			<!-- 快捷操作 -->
+			<div class="quick-actions">
+				<button class="quick-action emergency" on:click={quickRescue}>
+					<span class="quick-icon">⚡</span>
+					<span class="quick-text">30秒<br/>急救</span>
+				</button>
+
+				<button class="quick-action scan" on:click={scanBracelet}>
+					<span class="quick-icon">📿</span>
+					<span class="quick-text">扫码<br/>验真</span>
+				</button>
 			</div>
 		</div>
-	{/if}
 
-	<!-- 行动按钮 -->
-	<div class="flex flex-col sm:flex-row gap-6 mb-16">
-		<button
-			on:click={startExperience}
-			class="btn-divine-primary hover-divine shadow-divine brand-glow group"
-		>
-			<span class="relative z-10 flex items-center gap-3">
-				<span class="text-2xl group-hover:animate-divine-float">🌟</span>
-				开始体验
-				<span class="text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">✨</span>
-			</span>
-		</button>
-		
-		{#if !showNFCPrompt && nfcSupported}
-			<button
-				on:click={() => showNFCPrompt = true}
-				class="btn-mystic-secondary hover-mystic"
-			>
-				<span class="flex items-center gap-3">
-					<span class="text-xl">🔮</span>
-					手动输入
-				</span>
+		<!-- 特色说明 -->
+		<div class="features-hint">
+			<div class="feature-item">
+				<span class="feature-icon">🎭</span>
+				<span class="feature-text">3D神仙形象</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">🗣️</span>
+				<span class="feature-text">智能语音对话</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">💫</span>
+				<span class="feature-text">情绪急救疗愈</span>
+			</div>
+		</div>
+
+		<!-- 太极演示入口 -->
+		<div class="taichi-entry">
+			<button class="taichi-demo-btn" on:click={goToTaichiDemo}>
+				<span class="taichi-icon">🥋</span>
+				<span class="taichi-text">太极演示</span>
+				<span class="taichi-desc">观神仙打太极</span>
 			</button>
-		{/if}
-	</div>
-
-	<!-- 特性介绍 -->
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl w-full mb-16">
-		<div class="card-mystic hover-cosmic text-center p-8 group">
-			<div class="text-5xl mb-6 group-hover:animate-divine-float transition-all duration-500">🎯</div>
-			<h3 class="text-ethereal-title mb-4 group-hover:text-divine-aurora transition-colors duration-500">30秒急救</h3>
-			<p class="text-radiant-body opacity-90">个性化情绪急救，即时缓解焦虑</p>
-			
-			<!-- 卡片装饰 -->
-			<div class="absolute top-2 right-2 w-4 h-4 bg-gradient-to-br from-element-fire to-element-earth rounded-full opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
 		</div>
-		
-		<div class="card-mystic hover-cosmic text-center p-8 group">
-			<div class="text-5xl mb-6 group-hover:animate-cosmic-pulse transition-all duration-500">🤖</div>
-			<h3 class="text-ethereal-title mb-4 group-hover:text-divine-cosmos transition-colors duration-500">AI神仙</h3>
-			<p class="text-radiant-body opacity-90">基于八字生成专属神仙人格</p>
-			
-			<!-- 卡片装饰 -->
-			<div class="absolute top-2 right-2 w-4 h-4 bg-gradient-to-br from-divine-cosmos to-divine-celestial rounded-full opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
-		</div>
-		
-		<div class="card-mystic hover-cosmic text-center p-8 group">
-			<div class="text-5xl mb-6 group-hover:animate-ethereal-spin transition-all duration-500">📱</div>
-			<h3 class="text-ethereal-title mb-4 group-hover:text-divine-ethereal transition-colors duration-500">离线可用</h3>
-			<p class="text-radiant-body opacity-90">无网络也能完整体验所有功能</p>
-			
-			<!-- 卡片装饰 -->
-			<div class="absolute top-2 right-2 w-4 h-4 bg-gradient-to-br from-divine-ethereal to-element-wood rounded-full opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
-		</div>
-	</div>
 
-	<!-- 开发者工具链接 -->
-	<div class="flex flex-wrap justify-center gap-4 mb-12">
-		<a 
-			href="/test-api"
-			class="inline-flex items-center px-6 py-3 glass-mystic text-divine-ethereal rounded-xl hover-mystic transition-all duration-500 group"
-		>
-			<span class="text-xl mr-2 group-hover:animate-divine-float">🔧</span>
-			API 测试
-		</a>
-		<a 
-			href="/status"
-			class="inline-flex items-center px-6 py-3 glass-mystic text-emotion-hope rounded-xl hover-mystic transition-all duration-500 group"
-		>
-			<span class="text-xl mr-2 group-hover:animate-cosmic-pulse">🔍</span>
-			系统状态
-		</a>
-	</div>
-
-	<!-- 底部信息 -->
-	<div class="text-center">
-		<div class="inline-flex items-center gap-3 px-6 py-3 glass-divine rounded-xl">
-			<span class="text-divine-radiance animate-mystic-glow">✨</span>
-			<p class="text-divine-ethereal/80 text-sm">
-				此应用已通过开光认证 · 功德回向护持千年古寺
+		<!-- 底部说明 -->
+		<footer class="app-footer">
+			<p class="footer-text">
+				离线可用 · 隐私保护 · 永久免费
 			</p>
-			<span class="text-divine-radiance animate-mystic-glow">✨</span>
-		</div>
-	</div>
-
-	<!-- 浮动神性元素 -->
-	<div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden -z-10">
-		<!-- 神性光点 -->
-		<div class="absolute top-1/4 left-1/4 w-2 h-2 bg-divine-radiance rounded-full animate-divine-float opacity-60"></div>
-		<div class="absolute top-3/4 left-3/4 w-1 h-1 bg-divine-ethereal rounded-full animate-cosmic-pulse opacity-80"></div>
-		<div class="absolute top-1/2 left-1/6 w-1.5 h-1.5 bg-element-fire rounded-full animate-ethereal-spin opacity-70"></div>
-		<div class="absolute top-1/6 right-1/4 w-1 h-1 bg-divine-cosmos rounded-full animate-divine-float opacity-60"></div>
-		<div class="absolute bottom-1/3 right-1/6 w-2 h-2 bg-element-wood rounded-full animate-cosmic-pulse opacity-50"></div>
-		
-		<!-- 能量流线 -->
-		<div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-divine-aurora/30 to-transparent animate-aurora-dance"></div>
-		<div class="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-divine-ethereal/20 to-transparent animate-mystic-glow"></div>
-	</div>
+		</footer>
+	</main>
 </div>
 
 <style>
-	/* 页面特定的增强效果 */
-	@keyframes divine-entrance {
-		from {
+	.home-container {
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+		background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* 背景粒子 */
+	.particles {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.particle {
+		position: absolute;
+		width: 2px;
+		height: 2px;
+		background: rgba(255, 215, 0, 0.3);
+		border-radius: 50%;
+		animation: float var(--duration, 10s) infinite ease-in-out;
+		animation-delay: var(--delay, 0s);
+	}
+
+	.particle:nth-child(odd) {
+		left: 20%;
+		background: rgba(255, 215, 0, 0.2);
+	}
+
+	.particle:nth-child(even) {
+		right: 20%;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	@keyframes float {
+		0%, 100% {
+			transform: translateY(100vh) scale(0);
 			opacity: 0;
-			transform: translateY(30px) scale(0.95);
+		}
+		50% {
+			transform: translateY(50vh) scale(1);
+			opacity: 1;
+		}
+	}
+
+	/* 主内容 */
+	.main-content {
+		max-width: 400px;
+		width: 100%;
+		text-align: center;
+		z-index: 1;
+	}
+
+	/* 头部 */
+	.app-header {
+		margin-bottom: 2rem;
+	}
+
+	.time-display {
+		opacity: 0;
+		transform: translateY(-10px);
+		transition: all 0.6s ease;
+		margin-bottom: 0.5rem;
+	}
+
+	.time-display.visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.time {
+		font-size: 1.5rem;
+		font-weight: 300;
+		color: rgba(255, 215, 0, 0.8);
+		font-family: 'SF Mono', 'Monaco', monospace;
+	}
+
+	.greeting {
+		font-size: 1rem;
+		font-weight: 300;
+		color: rgba(255, 255, 255, 0.6);
+		margin: 0;
+		opacity: 0;
+		transform: translateY(-10px);
+		transition: all 0.8s ease 0.2s;
+	}
+
+	.greeting.visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	/* 英雄区域 */
+	.hero-section {
+		margin-bottom: 3rem;
+	}
+
+	.app-icon {
+		font-size: 4rem;
+		margin-bottom: 1rem;
+		animation: glow 3s ease-in-out infinite alternate;
+	}
+
+	@keyframes glow {
+		from {
+			filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
 		}
 		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
+			filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
 		}
 	}
 
-	.text-cosmic-hero {
-		animation: divine-entrance 1.5s var(--ease-ethereal-float) both;
-		animation-delay: 0.2s;
+	.app-title {
+		font-size: 2rem;
+		font-weight: 600;
+		color: #ffd700;
+		margin: 0 0 1rem 0;
+		background: linear-gradient(135deg, #ffd700, #ffed4a);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 	}
 
-	.text-ethereal-title {
-		animation: divine-entrance 1.2s var(--ease-ethereal-float) both;
-		animation-delay: 0.4s;
+	.app-subtitle {
+		font-size: 0.9rem;
+		color: rgba(255, 255, 255, 0.7);
+		line-height: 1.5;
+		margin: 0;
 	}
 
-	.text-celestial-subtitle {
-		animation: divine-entrance 1s var(--ease-ethereal-float) both;
-		animation-delay: 0.6s;
+	/* 操作区域 */
+	.action-section {
+		margin-bottom: 3rem;
 	}
 
-	.card-mystic {
-		animation: divine-entrance 0.8s var(--ease-ethereal-float) both;
+	.primary-action {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		padding: 1.25rem 1.5rem;
+		background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+		border: 1px solid rgba(255, 215, 0, 0.3);
+		border-radius: 16px;
+		color: white;
+		margin-bottom: 1.5rem;
+		transition: all 0.3s ease;
+		cursor: pointer;
+		backdrop-filter: blur(10px);
 	}
 
-	.card-mystic:nth-child(1) { animation-delay: 0.8s; }
-	.card-mystic:nth-child(2) { animation-delay: 1s; }
-	.card-mystic:nth-child(3) { animation-delay: 1.2s; }
+	.primary-action:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+		border-color: rgba(255, 215, 0, 0.5);
+	}
 
-	/* 触摸设备优化 */
-	@media (hover: none) {
-		.hover-divine:hover,
-		.hover-mystic:hover,
-		.hover-cosmic:hover {
-			transform: none;
-			filter: none;
+	.primary-action:active {
+		transform: translateY(0);
+	}
+
+	.action-icon {
+		font-size: 1.5rem;
+		margin-right: 1rem;
+	}
+
+	.action-content {
+		flex: 1;
+		text-align: left;
+	}
+
+	.action-title {
+		display: block;
+		font-size: 1.1rem;
+		font-weight: 600;
+		margin-bottom: 0.25rem;
+	}
+
+	.action-desc {
+		display: block;
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	.action-arrow {
+		font-size: 1.2rem;
+		color: rgba(255, 215, 0, 0.7);
+	}
+
+	/* 快捷操作 */
+	.quick-actions {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+
+	.quick-action {
+		padding: 1rem;
+		border-radius: 12px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.05);
+		color: white;
+		transition: all 0.3s ease;
+		cursor: pointer;
+		backdrop-filter: blur(5px);
+	}
+
+	.quick-action:hover {
+		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.quick-action.emergency {
+		border-color: rgba(239, 68, 68, 0.3);
+		background: rgba(239, 68, 68, 0.1);
+	}
+
+	.quick-action.emergency:hover {
+		border-color: rgba(239, 68, 68, 0.5);
+		background: rgba(239, 68, 68, 0.15);
+	}
+
+	.quick-action.scan {
+		border-color: rgba(34, 197, 94, 0.3);
+		background: rgba(34, 197, 94, 0.1);
+	}
+
+	.quick-action.scan:hover {
+		border-color: rgba(34, 197, 94, 0.5);
+		background: rgba(34, 197, 94, 0.15);
+	}
+
+	.quick-icon {
+		display: block;
+		font-size: 1.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.quick-text {
+		font-size: 0.8rem;
+		line-height: 1.2;
+	}
+
+	/* 特色说明 */
+	.features-hint {
+		display: flex;
+		justify-content: space-around;
+		margin-bottom: 2rem;
+		opacity: 0.7;
+	}
+
+	.feature-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.feature-icon {
+		font-size: 1.2rem;
+	}
+
+	.feature-text {
+		font-size: 0.7rem;
+		color: rgba(255, 255, 255, 0.6);
+	}
+
+	/* 太极演示入口 */
+	.taichi-entry {
+		margin: 1.5rem 0;
+		display: flex;
+		justify-content: center;
+	}
+
+	.taichi-demo-btn {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem 1.5rem;
+		background: linear-gradient(135deg, #8B4513, #CD853F);
+		border: none;
+		border-radius: 12px;
+		color: #fff;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+	}
+
+	.taichi-demo-btn:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+		background: linear-gradient(135deg, #A0522D, #DEB887);
+	}
+
+	.taichi-icon {
+		font-size: 1.5rem;
+	}
+
+	.taichi-text {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	.taichi-desc {
+		font-size: 0.8rem;
+		opacity: 0.9;
+		margin: 0;
+	}
+
+	/* 底部 */
+	.app-footer {
+		opacity: 0.5;
+	}
+
+	.footer-text {
+		font-size: 0.75rem;
+		color: rgba(255, 255, 255, 0.5);
+		margin: 0;
+	}
+
+	/* 响应式设计 */
+	@media (max-width: 480px) {
+		.home-container {
+			padding: 0.5rem;
 		}
-		
-		.group:hover .group-hover\:animate-divine-float {
+
+		.app-title {
+			font-size: 1.75rem;
+		}
+
+		.app-subtitle {
+			font-size: 0.85rem;
+		}
+
+		.primary-action {
+			padding: 1rem 1.25rem;
+		}
+
+		.features-hint {
+			flex-direction: column;
+			gap: 0.5rem;
+			align-items: center;
+		}
+
+		.feature-item {
+			flex-direction: row;
+			gap: 0.5rem;
+		}
+	}
+
+	/* 无障碍支持 */
+	@media (prefers-reduced-motion: reduce) {
+		.particle {
 			animation: none;
+		}
+
+		.app-icon {
+			animation: none;
+		}
+
+		.time-display,
+		.greeting {
+			transition: none;
+		}
+	}
+
+	/* 暗色主题适配 */
+	@media (prefers-color-scheme: light) {
+		.home-container {
+			background: radial-gradient(ellipse at center, #f8fafc 0%, #e2e8f0 100%);
+		}
+
+		.time {
+			color: rgba(180, 83, 9, 0.8);
+		}
+
+		.greeting {
+			color: rgba(0, 0, 0, 0.6);
+		}
+
+		.app-title {
+			background: linear-gradient(135deg, #d97706, #f59e0b);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+
+		.app-subtitle {
+			color: rgba(0, 0, 0, 0.7);
+		}
+
+		.primary-action {
+			background: linear-gradient(135deg, rgba(180, 83, 9, 0.1), rgba(180, 83, 9, 0.05));
+			border-color: rgba(180, 83, 9, 0.3);
+			color: #1f2937;
+		}
+
+		.action-desc {
+			color: rgba(0, 0, 0, 0.6);
+		}
+
+		.quick-action {
+			background: rgba(0, 0, 0, 0.05);
+			border-color: rgba(0, 0, 0, 0.1);
+			color: #1f2937;
+		}
+
+		.footer-text {
+			color: rgba(0, 0, 0, 0.5);
 		}
 	}
 </style> 

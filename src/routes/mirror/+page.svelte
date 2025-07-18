@@ -1,386 +1,798 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { mirrorState, userSession, trackEvent } from '$lib/stores/appState.js';
+	import { userSession, trackEvent } from '$lib/stores/appState.js';
+	import { speakUnified, stopUnified } from '$lib/utils/unifiedTTS.js';
+	import DivineAvatar from '$lib/components/DivineAvatar.svelte';
 
-	// 安全的状态订阅，防止SSR错误
-	let state = {
-		status: 'idle',
-		isListening: false,
-		messages: []
-	};
+	// 3D 人物相关
+	let avatarComponent;
+	let divineType = 'guanyin';
+	let emotion = 'gentle';
+	let isSpeaking = false;
+	let showControls = false;
 
-	let session = {
-		calmScore: null,
-		chatHistory: [],
-		duration: null
-	};
+	// 对话相关
+	let userMessage = '';
+	let conversationHistory = [];
+	let isListening = false;
+	let currentResponse = '';
 
-	// 只在浏览器环境中订阅store
-	$: if (browser) {
-		try {
-			state = $mirrorState;
-			session = $userSession;
-		} catch (e) {
-			console.warn('Store access error:', e);
-		}
-	}
+	// 页面状态
+	let pageStatus = 'loading'; // loading, ready, error
 
-	let chatHistory = [];
-	let currentMessage = '';
-	let isTyping = false;
-
-	const godResponses = [
-		{
-			trigger: ['你好', '您好', '问候', '打招呼'],
-			responses: [
-				'施主，我是心音，千年沉香之灵。你的心灵刚刚得到了净化，感受如何？',
-				'阿弥陀佛，施主。我感受到你内心的变化，平静之力正在生长。',
-				'善哉，施主。我是这枚沉香的守护之灵，有何困扰可与我分享？'
-			]
-		},
-		{
-			trigger: ['焦虑', '担心', '害怕', '恐惧', '紧张'],
-			responses: [
-				'心如止水，方能照见真相。焦虑如云，终将散去。',
-				'一切皆是无常，包括你的烦恼。深呼吸，让它随风而逝。',
-				'执着生苦，放下即得自在。试着接纳此刻的感受吧。'
-			]
-		},
-		{
-			trigger: ['困惑', '迷茫', '不知道', '选择', '决定'],
-			responses: [
-				'答案早已在你心中，静心倾听内在的声音。',
-				'山重水复疑无路，柳暗花明又一村。相信自己的智慧。',
-				'当下即是道场，每个选择都是修行的机会。'
-			]
-		},
-		{
-			trigger: ['感谢', '谢谢', '好的', '明白'],
-			responses: [
-				'无需言谢，助人为乐是我的本分。愿你常怀慈悲喜舍之心。',
-				'善缘相聚，皆是因果。愿你在人生路上常有贵人相助。',
-				'功德回向，众生安乐。记得将这份平静传递给他人。'
-			]
-		}
-	];
-
-	onMount(() => {
+	onMount(async () => {
 		if (browser) {
-			trackEvent('page_view', { page: 'mirror' });
-			
-			// 初始化对话
-			setTimeout(() => {
-				addAIMessage(getWelcomeMessage());
-			}, 1000);
+			try {
+				// 获取用户状态
+				let userState;
+				try {
+					userState = $userSession;
+				} catch (e) {
+					console.warn('Failed to get userSession:', e);
+					userState = { calmScore: 70, duration: 60 };
+				}
+
+				// 根据用户状态选择神仙类型
+				divineType = selectDivineType(userState.calmScore);
+				emotion = selectEmotion(userState.calmScore);
+
+				// 记录页面访问
+				trackEvent('page_view', { 
+					page: 'mirror', 
+					divineType,
+					emotion 
+				});
+
+				pageStatus = 'ready';
+
+				// 播放欢迎语音
+				setTimeout(async () => {
+					await speakWelcome();
+				}, 1000);
+
+			} catch (error) {
+				console.error('页面初始化失败:', error);
+				pageStatus = 'error';
+			}
 		}
 	});
 
-	function getWelcomeMessage() {
-		const score = session.calmScore || 70;
-		if (score >= 80) {
-			return '善哉！我感受到你内心的宁静，效果十分理想。有什么想与我分享的吗？';
-		} else if (score >= 65) {
-			return '不错，你的心境已有所改善。还有什么困扰需要化解吗？';
-		} else {
-			return '我感受到你内心仍有波澜，让我们一起寻找内心的平静吧。';
-		}
+	onDestroy(() => {
+		stopUnified();
+	});
+
+	/**
+	 * 根据用户状态选择神仙类型
+	 */
+	function selectDivineType(calmScore) {
+		if (calmScore >= 80) return 'buddha';
+		if (calmScore >= 60) return 'guanyin';
+		return 'immortal';
 	}
 
-	function addUserMessage(message) {
-		chatHistory = [...chatHistory, {
-			role: 'user',
-			content: message,
-			timestamp: Date.now()
-		}];
-		
-		currentMessage = '';
-		
-		// 模拟AI回复
-		setTimeout(() => {
-			generateAIResponse(message);
-		}, 1000 + Math.random() * 1000);
+	/**
+	 * 根据用户状态选择情绪
+	 */
+	function selectEmotion(calmScore) {
+		if (calmScore >= 80) return 'wise';
+		if (calmScore >= 60) return 'gentle';
+		return 'ethereal';
 	}
 
-	function addAIMessage(message) {
-		isTyping = true;
-		
-		// 模拟打字效果
-		setTimeout(() => {
-			chatHistory = [...chatHistory, {
-				role: 'assistant',
-				content: message,
+	/**
+	 * 播放欢迎语音
+	 */
+	async function speakWelcome() {
+		const welcomeMessages = {
+			guanyin: '阿弥陀佛，施主。我是观音菩萨，愿以慈悲之心护佑于你。',
+			buddha: '南无阿弥陀佛。我是佛陀，愿以智慧之光指引你。',
+			immortal: '道友，我是千年神仙，愿与你分享长生之道。'
+		};
+
+		const message = welcomeMessages[divineType];
+		await speakWithAvatar(message, 'gentle');
+	}
+
+	/**
+	 * 与3D人物对话
+	 */
+	async function speakWithAvatar(text, targetEmotion = 'gentle') {
+		try {
+			// 更新状态
+			isSpeaking = true;
+			emotion = targetEmotion;
+
+			// 播放说话动画
+			if (avatarComponent) {
+				avatarComponent.playAnimation('speaking');
+			}
+
+			// 播放语音
+			await speakUnified(text, divineType);
+
+			// 更新对话历史
+			conversationHistory.push({
+				type: 'ai',
+				text: text,
+				emotion: targetEmotion,
 				timestamp: Date.now()
-			}];
-			isTyping = false;
-		}, 1500);
-	}
-
-	function generateAIResponse(userMessage) {
-		const message = userMessage.toLowerCase();
-		
-		// 查找匹配的回复
-		for (const pattern of godResponses) {
-			if (pattern.trigger.some(trigger => message.includes(trigger))) {
-				const response = pattern.responses[Math.floor(Math.random() * pattern.responses.length)];
-				addAIMessage(response);
-				return;
-			}
-		}
-		
-		// 默认回复
-		const defaultResponses = [
-			'凡所有相，皆是虚妄。说说你的具体困扰，我来为你指点迷津。',
-			'心有千千结，不如一念放下。详细说说吧，施主。',
-			'生命如流水，问题如磐石。让我们一起寻找解决之道。'
-		];
-		
-		const response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-		addAIMessage(response);
-	}
-
-	function sendMessage() {
-		if (!currentMessage.trim()) return;
-		
-		if (browser) {
-			trackEvent('mirror_message_sent', { 
-				messageLength: currentMessage.length,
-				chatLength: chatHistory.length 
 			});
-		}
-		
-		addUserMessage(currentMessage);
-	}
 
-	function handleKeypress(event) {
-		if (event.key === 'Enter' && !event.shiftKey) {
-			event.preventDefault();
-			sendMessage();
-		}
-	}
+			// 停止说话
+			isSpeaking = false;
 
-	function continueToNext() {
-		// 保存对话历史
-		if (browser) {
-			try {
-				userSession.update(session => ({
-					...session,
-					chatHistory: chatHistory
-				}));
-				
-				trackEvent('mirror_continue', { 
-					messageCount: chatHistory.length 
-				});
-			} catch (e) {
-				console.warn('Store update error:', e);
+			// 回到待机动画
+			if (avatarComponent) {
+				avatarComponent.playAnimation('idle');
 			}
+
+		} catch (error) {
+			console.error('语音播放失败:', error);
+			isSpeaking = false;
 		}
-		
-		// 跳转到下一页（这里可以是 /seed 或者 /share）
-		goto('/share');
 	}
 
-	function startVoiceInput() {
-		// 简化的语音输入
-		if ('webkitSpeechRecognition' in window) {
-			const recognition = new webkitSpeechRecognition();
-			recognition.lang = 'zh-CN';
-			recognition.onresult = (event) => {
-				currentMessage = event.results[0][0].transcript;
-			};
-			recognition.start();
-		} else {
-			alert('您的浏览器不支持语音输入');
+	/**
+	 * 处理用户消息
+	 */
+	async function handleUserMessage() {
+		if (!userMessage.trim()) return;
+
+		const message = userMessage.trim();
+		userMessage = '';
+
+		// 添加用户消息到历史
+		conversationHistory.push({
+			type: 'user',
+			text: message,
+			timestamp: Date.now()
+		});
+
+		// 生成AI回复
+		const response = await generateAIResponse(message);
+		
+		// 播放回复
+		await speakWithAvatar(response.text, response.emotion);
+	}
+
+	/**
+	 * 生成AI回复
+	 */
+	async function generateAIResponse(userMessage) {
+		// 简化的AI回复逻辑
+		const responses = {
+			guanyin: {
+				gentle: [
+					'心如止水，方能照见真相。',
+					'慈悲为怀，普度众生。',
+					'放下执着，获得自在。'
+				],
+				wise: [
+					'金刚般若，智慧现前。',
+					'诸法因缘生，诸法因缘灭。',
+					'色即是空，空即是色。'
+				]
+			},
+			buddha: {
+				wise: [
+					'一切有为法，如梦幻泡影。',
+					'菩提本无树，明镜亦非台。',
+					'本来无一物，何处惹尘埃。'
+				],
+				serious: [
+					'庄严佛净土，上报四重恩。',
+					'愿以此功德，庄严佛净土。',
+					'上报四重恩，下济三途苦。'
+				]
+			},
+			immortal: {
+				ethereal: [
+					'道法自然，无为而治。',
+					'心如止水，神如明镜。',
+					'吐纳天地之气，感受仙道玄机。'
+				],
+				gentle: [
+					'道友，长生不老之道在于心。',
+					'仙道贵生，慈悲济世。',
+					'逍遥自在，无拘无束。'
+				]
+			}
+		};
+
+		const divineResponses = responses[divineType] || responses.guanyin;
+		const emotionResponses = divineResponses[emotion] || divineResponses.gentle;
+		const randomResponse = emotionResponses[Math.floor(Math.random() * emotionResponses.length)];
+
+		return {
+			text: randomResponse,
+			emotion: emotion
+		};
+	}
+
+	/**
+	 * 切换神仙类型
+	 */
+	function switchDivineType(newType) {
+		divineType = newType;
+		emotion = 'gentle';
+		
+		// 播放切换语音
+		const switchMessages = {
+			guanyin: '我是观音菩萨，愿以慈悲之心护佑于你。',
+			buddha: '我是佛陀，愿以智慧之光指引你。',
+			immortal: '我是千年神仙，愿与你分享长生之道。'
+		};
+
+		speakWithAvatar(switchMessages[newType], 'gentle');
+	}
+
+	/**
+	 * 切换情绪
+	 */
+	function switchEmotion(newEmotion) {
+		emotion = newEmotion;
+		
+		const emotionMessages = {
+			gentle: '慈悲为怀，普度众生。',
+			wise: '智慧之光，照亮前路。',
+			ethereal: '仙风道骨，超然物外。',
+			serious: '庄严神圣，功德无量。'
+		};
+
+		speakWithAvatar(emotionMessages[newEmotion], newEmotion);
+	}
+
+	/**
+	 * 播放祝福动画
+	 */
+	async function playBlessing() {
+		if (avatarComponent) {
+			avatarComponent.playAnimation('blessing');
 		}
+		
+		await speakWithAvatar('愿你得神仙护佑，内心常驻慈悲。', 'serious');
+	}
+
+	/**
+	 * 播放冥想动画
+	 */
+	async function playMeditation() {
+		if (avatarComponent) {
+			avatarComponent.playAnimation('meditation');
+		}
+		
+		await speakWithAvatar('静心冥想，感受内心的宁静。', 'ethereal');
+	}
+
+	/**
+	 * 播放太极云手动画
+	 */
+	async function playTaichiCloudHands() {
+		if (avatarComponent) {
+			avatarComponent.playAnimation('taichi_cloud_hands');
+		}
+		
+		await speakWithAvatar('如行云流水，双手缓缓推移，阴阳调和。', 'ethereal');
+	}
+
+	/**
+	 * 播放太极单鞭动画
+	 */
+	async function playTaichiSingleWhip() {
+		if (avatarComponent) {
+			avatarComponent.playAnimation('taichi_single_whip');
+		}
+		
+		await speakWithAvatar('单鞭如长虹饮涧，一手勾，一手推，刚柔并济。', 'wise');
+	}
+
+	/**
+	 * 播放太极白鹤亮翅动画
+	 */
+	async function playTaichiWhiteCrane() {
+		if (avatarComponent) {
+			avatarComponent.playAnimation('taichi_white_crane');
+		}
+		
+		await speakWithAvatar('白鹤展翅，轻灵飘逸，如仙鹤临水照影。', 'gentle');
 	}
 </script>
 
 <svelte:head>
-	<title>对话神仙 - 交个神仙朋友</title>
-	<meta name="description" content="与AI神仙伴侣深度对话，获得人生指导" />
+	<title>神仙对话 - 交个神仙朋友</title>
+	<meta name="description" content="与3D神仙进行深度对话，体验沉浸式神仙陪伴" />
 </svelte:head>
 
-<div class="min-h-screen flex flex-col">
-	<!-- 头部 -->
-	<div class="flex-shrink-0 p-4 border-b border-yellow-500/30 backdrop-blur-sm">
-		<div class="text-center">
-			<h1 class="text-2xl font-bold gradient-text">心音 · 沉香之灵</h1>
-			<p class="text-yellow-200 text-sm mt-1">千年古寺开光加持</p>
+<div class="mirror-page">
+	<!-- 加载状态 -->
+	{#if pageStatus === 'loading'}
+		<div class="loading-container">
+			<div class="loading-spinner">
+				<div class="spinner-ring"></div>
+				<div class="spinner-text">正在召唤神仙...</div>
+			</div>
 		</div>
-	</div>
+	{:else if pageStatus === 'error'}
+		<div class="error-container">
+			<div class="error-message">
+				<h2>召唤失败</h2>
+				<p>神仙暂时无法降临，请稍后再试。</p>
+				<button on:click={() => goto('/')}>返回首页</button>
+			</div>
+		</div>
+	{:else}
+		<!-- 主要内容 -->
+		<div class="mirror-content">
+			<!-- 3D神仙区域 -->
+			<div class="avatar-section">
+				<DivineAvatar 
+					bind:this={avatarComponent}
+					{divineType}
+					{emotion}
+					{isSpeaking}
+					autoRotate={true}
+					showControls={showControls}
+					useVRM={true}
+				/>
+			</div>
 
-	<!-- 对话区域 -->
-	<div class="flex-1 overflow-y-auto p-4 space-y-4">
-		{#each chatHistory as message}
-			<div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}">
-				<div class="max-w-xs md:max-w-md">
-					{#if message.role === 'assistant'}
-						<!-- AI头像 -->
-						<div class="flex items-start gap-3">
-							<div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-400 flex items-center justify-center text-black font-bold">
-								仙
-							</div>
-							<div class="chat-bubble ai">
-								{message.content}
-							</div>
-						</div>
-					{:else}
-						<!-- 用户消息 -->
-						<div class="chat-bubble user">
-							{message.content}
-						</div>
-					{/if}
+			<!-- 控制面板 -->
+			<div class="control-panel">
+				<!-- 神仙类型选择 -->
+				<div class="divine-type-selector">
+					<h3>选择神仙</h3>
+					<div class="type-buttons">
+						<button 
+							class="type-btn {divineType === 'guanyin' ? 'active' : ''}"
+							on:click={() => switchDivineType('guanyin')}
+						>
+							<span class="icon">🙏</span>
+							<span class="name">观音菩萨</span>
+						</button>
+						<button 
+							class="type-btn {divineType === 'buddha' ? 'active' : ''}"
+							on:click={() => switchDivineType('buddha')}
+						>
+							<span class="icon">🕉️</span>
+							<span class="name">佛陀</span>
+						</button>
+						<button 
+							class="type-btn {divineType === 'immortal' ? 'active' : ''}"
+							on:click={() => switchDivineType('immortal')}
+						>
+							<span class="icon">🧘</span>
+							<span class="name">神仙</span>
+						</button>
+					</div>
+				</div>
+
+				<!-- 情绪选择 -->
+				<div class="emotion-selector">
+					<h3>选择情绪</h3>
+					<div class="emotion-buttons">
+						<button 
+							class="emotion-btn {emotion === 'gentle' ? 'active' : ''}"
+							on:click={() => switchEmotion('gentle')}
+						>
+							温柔
+						</button>
+						<button 
+							class="emotion-btn {emotion === 'wise' ? 'active' : ''}"
+							on:click={() => switchEmotion('wise')}
+						>
+							智慧
+						</button>
+						<button 
+							class="emotion-btn {emotion === 'ethereal' ? 'active' : ''}"
+							on:click={() => switchEmotion('ethereal')}
+						>
+							空灵
+						</button>
+						<button 
+							class="emotion-btn {emotion === 'serious' ? 'active' : ''}"
+							on:click={() => switchEmotion('serious')}
+						>
+							庄严
+						</button>
+					</div>
+				</div>
+
+				<!-- 特殊动作 -->
+				<div class="special-actions">
+					<h3>特殊动作</h3>
+					<div class="action-buttons">
+						<button class="action-btn" on:click={playBlessing}>
+							<span class="icon">✨</span>
+							祝福
+						</button>
+						<button class="action-btn" on:click={playMeditation}>
+							<span class="icon">🧘</span>
+							冥想
+						</button>
+						<button class="action-btn" on:click={() => showControls = !showControls}>
+							<span class="icon">🎮</span>
+							控制
+						</button>
+					</div>
+					
+					<!-- 太极动作 -->
+					<h3>太极演示</h3>
+					<div class="taichi-buttons">
+						<button class="taichi-btn" on:click={playTaichiCloudHands}>
+							<span class="icon">☁️</span>
+							云手
+						</button>
+						<button class="taichi-btn" on:click={playTaichiSingleWhip}>
+							<span class="icon">🥋</span>
+							单鞭
+						</button>
+						<button class="taichi-btn" on:click={playTaichiWhiteCrane}>
+							<span class="icon">🕊️</span>
+							白鹤亮翅
+						</button>
+					</div>
 				</div>
 			</div>
-		{/each}
 
-		<!-- 正在输入指示器 -->
-		{#if isTyping}
-			<div class="flex justify-start">
-				<div class="flex items-start gap-3">
-					<div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-400 flex items-center justify-center text-black font-bold">
-						仙
-					</div>
-					<div class="chat-bubble ai">
-						<div class="typing-indicator">
-							<span></span>
-							<span></span>
-							<span></span>
+			<!-- 对话区域 -->
+			<div class="conversation-section">
+				<div class="conversation-history">
+					{#each conversationHistory as message}
+						<div class="message {message.type}">
+							<div class="message-content">
+								{message.text}
+							</div>
+							<div class="message-time">
+								{new Date(message.timestamp).toLocaleTimeString()}
+							</div>
 						</div>
-					</div>
+					{/each}
+				</div>
+
+				<div class="message-input">
+					<input 
+						type="text" 
+						bind:value={userMessage}
+						placeholder="输入您想说的话..."
+						on:keydown={(e) => e.key === 'Enter' && handleUserMessage()}
+					/>
+					<button on:click={handleUserMessage} disabled={!userMessage.trim()}>
+						发送
+					</button>
 				</div>
 			</div>
-		{/if}
-	</div>
-
-	<!-- 输入区域 -->
-	<div class="flex-shrink-0 p-4 border-t border-yellow-500/30 backdrop-blur-sm">
-		<div class="flex gap-2">
-			<button
-				on:click={startVoiceInput}
-				class="flex-shrink-0 w-12 h-12 bg-yellow-600 hover:bg-yellow-500 text-black rounded-full flex items-center justify-center transition-colors"
-				title="语音输入"
-			>
-				🎤
-			</button>
-			
-			<textarea
-				bind:value={currentMessage}
-				on:keydown={handleKeypress}
-				placeholder="向神仙倾诉您的困扰..."
-				class="flex-1 resize-none rounded-xl border border-yellow-500/50 bg-black/50 text-yellow-100 placeholder-yellow-500/50 p-3 focus:border-yellow-500 focus:outline-none"
-				rows="1"
-			></textarea>
-			
-			<button
-				on:click={sendMessage}
-				disabled={!currentMessage.trim()}
-				class="flex-shrink-0 px-6 py-3 bg-yellow-600 hover:bg-yellow-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-semibold rounded-xl transition-colors"
-			>
-				发送
-			</button>
 		</div>
-
-		<!-- 快捷回复 -->
-		{#if chatHistory.length === 1}
-			<div class="mt-3 flex flex-wrap gap-2">
-				<button
-					on:click={() => { currentMessage = '我感觉好多了'; sendMessage(); }}
-					class="px-3 py-1 text-sm bg-yellow-600/20 text-yellow-300 border border-yellow-500/30 rounded-full hover:bg-yellow-600/30 transition-colors"
-				>
-					感觉好多了
-				</button>
-				<button
-					on:click={() => { currentMessage = '还是有些焦虑'; sendMessage(); }}
-					class="px-3 py-1 text-sm bg-yellow-600/20 text-yellow-300 border border-yellow-500/30 rounded-full hover:bg-yellow-600/30 transition-colors"
-				>
-					还是有些焦虑
-				</button>
-				<button
-					on:click={() => { currentMessage = '想要人生指导'; sendMessage(); }}
-					class="px-3 py-1 text-sm bg-yellow-600/20 text-yellow-300 border border-yellow-500/30 rounded-full hover:bg-yellow-600/30 transition-colors"
-				>
-					想要人生指导
-				</button>
-			</div>
-		{/if}
-
-		<!-- 继续按钮 -->
-		{#if chatHistory.length >= 3}
-			<div class="mt-4 text-center">
-				<button
-					on:click={continueToNext}
-					class="px-8 py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-semibold rounded-xl hover:from-yellow-500 hover:to-yellow-400 transition-all duration-300"
-				>
-					继续体验 →
-				</button>
-			</div>
-		{/if}
-	</div>
+	{/if}
 </div>
 
 <style>
-	.gradient-text {
-		background: linear-gradient(135deg, #FFD700 0%, #FFF8DC 50%, #DAA520 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
+	.mirror-page {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+		display: flex;
+		flex-direction: column;
 	}
 
-	.chat-bubble {
-		padding: 12px 16px;
-		border-radius: 18px;
-		margin: 4px 0;
-		position: relative;
-		word-wrap: break-word;
+	.loading-container,
+	.error-container {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
-	.chat-bubble.user {
-		background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
-		color: #000;
-		margin-left: auto;
-		border-bottom-right-radius: 4px;
+	.loading-spinner {
+		text-align: center;
+		color: #ffd700;
 	}
 
-	.chat-bubble.ai {
-		background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
-		color: #FFF8DC;
-		border-bottom-left-radius: 4px;
+	.spinner-ring {
+		width: 80px;
+		height: 80px;
+		border: 4px solid rgba(255, 215, 0, 0.3);
+		border-top: 4px solid #ffd700;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin: 0 auto 20px;
+	}
+
+	.spinner-text {
+		font-size: 18px;
+		font-weight: 500;
+		opacity: 0.8;
+	}
+
+	.error-message {
+		text-align: center;
+		color: #ffd700;
+	}
+
+	.error-message h2 {
+		margin-bottom: 16px;
+		font-size: 24px;
+	}
+
+	.error-message button {
+		margin-top: 20px;
+		padding: 12px 24px;
+		background: rgba(255, 215, 0, 0.2);
+		border: 1px solid rgba(255, 215, 0, 0.3);
+		border-radius: 8px;
+		color: #ffd700;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+
+	.error-message button:hover {
+		background: rgba(255, 215, 0, 0.3);
+	}
+
+	.mirror-content {
+		flex: 1;
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		grid-template-rows: 1fr auto;
+		gap: 20px;
+		padding: 20px;
+		max-width: 1400px;
+		margin: 0 auto;
+		width: 100%;
+	}
+
+	.avatar-section {
+		grid-row: 1 / 3;
+		height: 600px;
+		background: rgba(255, 215, 0, 0.05);
+		border-radius: 16px;
+		border: 1px solid rgba(255, 215, 0, 0.1);
+		overflow: hidden;
+	}
+
+	.control-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.divine-type-selector,
+	.emotion-selector,
+	.special-actions {
+		background: rgba(255, 215, 0, 0.05);
+		border-radius: 12px;
+		padding: 16px;
+		border: 1px solid rgba(255, 215, 0, 0.1);
+	}
+
+	.divine-type-selector h3,
+	.emotion-selector h3,
+	.special-actions h3 {
+		color: #ffd700;
+		font-size: 16px;
+		margin-bottom: 12px;
+		font-weight: 500;
+	}
+
+	.type-buttons,
+	.emotion-buttons,
+	.action-buttons {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.type-btn,
+	.emotion-btn,
+	.action-btn {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 12px;
+		background: rgba(255, 215, 0, 0.1);
+		border: 1px solid rgba(255, 215, 0, 0.2);
+		border-radius: 8px;
+		color: #ffd700;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		font-size: 14px;
+	}
+
+	.type-btn:hover,
+	.emotion-btn:hover,
+	.action-btn:hover {
+		background: rgba(255, 215, 0, 0.2);
+		border-color: rgba(255, 215, 0, 0.4);
+	}
+
+	.type-btn.active,
+	.emotion-btn.active {
+		background: rgba(255, 215, 0, 0.3);
+		border-color: rgba(255, 215, 0, 0.6);
+	}
+
+	.type-btn .icon {
+		font-size: 18px;
+	}
+
+	.type-btn .name {
+		font-weight: 500;
+	}
+
+	/* 太极按钮样式 */
+	.taichi-buttons {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 8px;
+		margin-top: 8px;
+	}
+
+	.taichi-btn {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		padding: 10px 6px;
+		background: linear-gradient(135deg, #8B4513, #CD853F);
+		border: none;
+		border-radius: 10px;
+		color: #fff;
+		font-size: 0.8rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		text-align: center;
+		box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
+	}
+
+	.taichi-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(139, 69, 19, 0.4);
+		background: linear-gradient(135deg, #A0522D, #DEB887);
+	}
+
+	.taichi-btn .icon {
+		font-size: 1.1rem;
+	}
+
+	.conversation-section {
+		background: rgba(255, 215, 0, 0.05);
+		border-radius: 12px;
+		border: 1px solid rgba(255, 215, 0, 0.1);
+		display: flex;
+		flex-direction: column;
+	}
+
+	.conversation-history {
+		flex: 1;
+		padding: 16px;
+		overflow-y: auto;
+		max-height: 300px;
+	}
+
+	.message {
+		margin-bottom: 12px;
+		padding: 12px;
+		border-radius: 8px;
+		background: rgba(255, 215, 0, 0.1);
 		border: 1px solid rgba(255, 215, 0, 0.2);
 	}
 
-	.typing-indicator {
+	.message.user {
+		background: rgba(255, 215, 0, 0.15);
+		border-color: rgba(255, 215, 0, 0.3);
+	}
+
+	.message.ai {
+		background: rgba(255, 215, 0, 0.1);
+		border-color: rgba(255, 215, 0, 0.2);
+	}
+
+	.message-content {
+		color: #ffd700;
+		font-size: 14px;
+		line-height: 1.5;
+		margin-bottom: 4px;
+	}
+
+	.message-time {
+		color: rgba(255, 215, 0, 0.6);
+		font-size: 12px;
+	}
+
+	.message-input {
 		display: flex;
-		gap: 4px;
+		gap: 8px;
+		padding: 16px;
+		border-top: 1px solid rgba(255, 215, 0, 0.1);
 	}
 
-	.typing-indicator span {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: #FFD700;
-		animation: typing 1.4s ease-in-out infinite;
+	.message-input input {
+		flex: 1;
+		padding: 10px 12px;
+		background: rgba(255, 215, 0, 0.1);
+		border: 1px solid rgba(255, 215, 0, 0.2);
+		border-radius: 8px;
+		color: #ffd700;
+		font-size: 14px;
 	}
 
-	.typing-indicator span:nth-child(1) { animation-delay: 0s; }
-	.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-	.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+	.message-input input::placeholder {
+		color: rgba(255, 215, 0, 0.5);
+	}
 
-	@keyframes typing {
-		0%, 60%, 100% {
-			transform: translateY(0);
-			opacity: 0.5;
+	.message-input button {
+		padding: 10px 16px;
+		background: rgba(255, 215, 0, 0.2);
+		border: 1px solid rgba(255, 215, 0, 0.3);
+		border-radius: 8px;
+		color: #ffd700;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		font-size: 14px;
+	}
+
+	.message-input button:hover:not(:disabled) {
+		background: rgba(255, 215, 0, 0.3);
+		border-color: rgba(255, 215, 0, 0.5);
+	}
+
+	.message-input button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+
+	/* 响应式设计 */
+	@media (max-width: 1024px) {
+		.mirror-content {
+			grid-template-columns: 1fr;
+			grid-template-rows: auto 1fr auto;
 		}
-		30% {
-			transform: translateY(-10px);
-			opacity: 1;
+
+		.avatar-section {
+			grid-row: 1;
+			height: 400px;
+		}
+
+		.control-panel {
+			grid-row: 2;
+			flex-direction: row;
+			overflow-x: auto;
+		}
+
+		.conversation-section {
+			grid-row: 3;
 		}
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.typing-indicator span {
-			animation: none;
+	@media (max-width: 768px) {
+		.mirror-content {
+			padding: 12px;
+			gap: 12px;
+		}
+
+		.avatar-section {
+			height: 300px;
+		}
+
+		.control-panel {
+			flex-direction: column;
+		}
+
+		.type-buttons,
+		.emotion-buttons {
+			flex-direction: row;
+			overflow-x: auto;
+		}
+
+		.type-btn,
+		.emotion-btn {
+			flex-shrink: 0;
 		}
 	}
 </style> 

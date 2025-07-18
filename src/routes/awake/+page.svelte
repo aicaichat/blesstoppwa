@@ -2,322 +2,537 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { awakeState, userSession, trackEvent } from '$lib/stores/appState.js';
-
-	// 安全的状态订阅，防止SSR错误
-	let state = {
-		status: 'loading',
-		particlesLoaded: false,
-		selectedDuration: null
-	};
-
-	// 只在浏览器环境中订阅store
-	$: if (browser) {
-		try {
-			state = $awakeState;
-		} catch (e) {
-			console.warn('Store access error:', e);
-		}
-	}
+	import { userSession, trackEvent } from '$lib/stores/appState.js';
 
 	let selectedDuration = null;
-	let particles = [];
+	let isAnimating = false;
+
+	// 推荐的时长配置
+	const durations = [
+		{
+			value: 30,
+			title: '快速急救',
+			subtitle: '忙碌时刻',
+			description: '8秒引导 + 22秒静心',
+			icon: '⚡',
+			color: 'emergency',
+			features: ['极速缓解', '即时效果', '随时可用']
+		},
+		{
+			value: 60,
+			title: '深度放松',
+			subtitle: '黄金时长',
+			description: '15秒引导 + 45秒呼吸',
+			icon: '🌸',
+			color: 'recommended',
+			isRecommended: true,
+			features: ['平衡效果', '深度疗愈', '最受欢迎']
+		},
+		{
+			value: 90,
+			title: '完整冥想',
+			subtitle: '充分体验',
+			description: '25秒引导 + 65秒冥想',
+			icon: '🧘',
+			color: 'premium',
+			features: ['全面净化', '深层疗愈', '心灵重塑']
+		}
+	];
 
 	onMount(() => {
 		if (browser) {
 			trackEvent('page_view', { page: 'awake' });
-			
-			// 简化的粒子效果
-			initParticles();
-			
-			try {
-				awakeState.update(s => ({ ...s, status: 'ready', particlesLoaded: true }));
-			} catch (e) {
-				console.warn('Store update error:', e);
-			}
 		}
 	});
 
-	function initParticles() {
-		// 创建简单的CSS动画粒子
-		for (let i = 0; i < 20; i++) {
-			particles.push({
-				id: i,
-				x: Math.random() * 100,
-				y: Math.random() * 100,
-				delay: Math.random() * 4,
-				duration: 3 + Math.random() * 2
-			});
-		}
-	}
-
 	function selectDuration(duration) {
+		if (isAnimating) return;
+		
 		selectedDuration = duration;
+		isAnimating = true;
 		
 		if (browser) {
-			try {
-				awakeState.update(s => ({ ...s, status: 'selected', selectedDuration: duration }));
-				
-				// 保存到用户会话
-				userSession.update(session => ({
-					...session,
-					duration
-				}));
+			// 保存选择到用户会话
+			userSession.update(session => ({
+				...session,
+				duration
+			}));
 
-				trackEvent('duration_select', { duration });
-			} catch (e) {
-				console.warn('Store update error:', e);
-			}
+			trackEvent('duration_select', { 
+				duration,
+				timestamp: Date.now()
+			});
 		}
 		
-		// 延迟跳转，给用户确认感
+		// 给用户视觉反馈后跳转
 		setTimeout(() => {
 			goto('/breathe');
-		}, 500);
+		}, 800);
+	}
+
+	function goBack() {
+		goto('/');
 	}
 </script>
 
 <svelte:head>
 	<title>选择体验时长 - 交个神仙朋友</title>
-	<meta name="description" content="选择您的情绪急救体验时长：30秒、60秒或90秒" />
+	<meta name="description" content="选择您的情绪急救体验时长：30秒极速急救、60秒深度放松或90秒完整冥想" />
 </svelte:head>
 
-<!-- 粒子背景 -->
-<div class="particles-container">
-	{#each particles as particle}
-		<div 
-			class="particle"
-			style="
-				left: {particle.x}%;
-				top: {particle.y}%;
-				animation-delay: {particle.delay}s;
-				animation-duration: {particle.duration}s;
-			"
-		></div>
-	{/each}
-</div>
-
-<div class="min-h-screen flex flex-col items-center justify-center p-6 relative z-10">
-	<!-- 顶部标题 -->
-	<div class="text-center mb-12">
-		<h1 class="text-3xl md:text-5xl font-bold gradient-text mb-4">
-			选择体验时长
-		</h1>
-		<p class="text-lg text-yellow-200 opacity-80">
-			根据您的需求选择适合的时长
-		</p>
+<div class="awake-container">
+	<!-- 背景装饰 -->
+	<div class="bg-decoration" aria-hidden="true">
+		<div class="floating-element" style="--delay: 0s; --x: 20%; --y: 30%;"></div>
+		<div class="floating-element" style="--delay: 2s; --x: 80%; --y: 70%;"></div>
+		<div class="floating-element" style="--delay: 4s; --x: 60%; --y: 20%;"></div>
 	</div>
 
-	<!-- 加载状态 -->
-	{#if state.status === 'loading'}
-		<div class="text-center">
-			<div class="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-			<p class="text-yellow-200">正在准备体验环境...</p>
-		</div>
-	{/if}
+	<!-- 主内容 -->
+	<main class="main-content">
+		<!-- 返回按钮 -->
+		<button class="back-button" on:click={goBack} aria-label="返回首页">
+			<span class="back-icon">←</span>
+		</button>
 
-	<!-- 时长选择卡片 -->
-	{#if state.status === 'ready' || state.status === 'selected'}
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mb-8">
-			<!-- 30秒卡片 -->
-			<button
-				on:click={() => selectDuration(30)}
-				disabled={selectedDuration !== null}
-				class="duration-card {selectedDuration === 30 ? 'selected' : ''}"
-			>
-				<div class="duration-number">30s</div>
-				<h3 class="text-xl font-semibold text-yellow-100 mb-2">快速急救</h3>
-				<p class="text-yellow-200/80 text-sm mb-4">
-					适合忙碌时刻，快速缓解焦虑情绪
-				</p>
-				<div class="features">
-					<div class="feature">✨ 8秒引导</div>
-					<div class="feature">🧘 22秒静心</div>
-					<div class="feature">⚡ 即时效果</div>
-				</div>
-			</button>
+		<!-- 页面标题 -->
+		<header class="page-header">
+			<h1 class="page-title">选择体验时长</h1>
+			<p class="page-subtitle">
+				根据您的时间安排，选择最适合的神仙陪伴时长
+			</p>
+		</header>
 
-			<!-- 60秒卡片 -->
-			<button
-				on:click={() => selectDuration(60)}
-				disabled={selectedDuration !== null}
-				class="duration-card recommended {selectedDuration === 60 ? 'selected' : ''}"
-			>
-				<div class="recommended-badge">推荐</div>
-				<div class="duration-number">60s</div>
-				<h3 class="text-xl font-semibold text-yellow-100 mb-2">深度放松</h3>
-				<p class="text-yellow-200/80 text-sm mb-4">
-					平衡效果与时间，最受欢迎的选择
-				</p>
-				<div class="features">
-					<div class="feature">🎵 15秒引导</div>
-					<div class="feature">🌸 45秒呼吸环</div>
-					<div class="feature">💫 深度疗愈</div>
-				</div>
-			</button>
+		<!-- 时长选择卡片 -->
+		<div class="duration-cards">
+			{#each durations as duration, index}
+				<button 
+					class="duration-card {duration.color} {selectedDuration === duration.value ? 'selected' : ''}"
+					class:disabled={isAnimating}
+					on:click={() => selectDuration(duration.value)}
+					style="--animation-delay: {index * 0.1}s"
+				>
+					<!-- 推荐标识 -->
+					{#if duration.isRecommended}
+						<div class="recommended-badge">
+							<span class="badge-text">推荐</span>
+						</div>
+					{/if}
 
-			<!-- 90秒卡片 -->
-			<button
-				on:click={() => selectDuration(90)}
-				disabled={selectedDuration !== null}
-				class="duration-card {selectedDuration === 90 ? 'selected' : ''}"
-			>
-				<div class="duration-number">90s</div>
-				<h3 class="text-xl font-semibold text-yellow-100 mb-2">完整冥想</h3>
-				<p class="text-yellow-200/80 text-sm mb-4">
-					充分的时间，获得最佳的疗愈效果
-				</p>
-				<div class="features">
-					<div class="feature">🔮 25秒引导</div>
-					<div class="feature">🌊 65秒冥想</div>
-					<div class="feature">🏔️ 完整体验</div>
-				</div>
-			</button>
+					<!-- 卡片内容 -->
+					<div class="card-icon">{duration.icon}</div>
+					
+					<div class="card-header">
+						<div class="duration-number">{duration.value}s</div>
+						<h3 class="card-title">{duration.title}</h3>
+						<p class="card-subtitle">{duration.subtitle}</p>
+					</div>
+
+					<div class="card-description">
+						<p class="description-text">{duration.description}</p>
+					</div>
+
+					<div class="card-features">
+						{#each duration.features as feature}
+							<span class="feature-tag">{feature}</span>
+						{/each}
+					</div>
+
+					<!-- 选择状态指示 -->
+					{#if selectedDuration === duration.value}
+						<div class="selection-indicator">
+							<span class="check-icon">✓</span>
+						</div>
+					{/if}
+				</button>
+			{/each}
 		</div>
 
-		<!-- 确认状态 -->
-		{#if selectedDuration}
-			<div class="text-center">
-				<div class="inline-flex items-center gap-2 px-4 py-2 bg-green-600/20 border border-green-500/50 rounded-full">
-					<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-					<span class="text-green-400 font-medium">已选择 {selectedDuration} 秒体验</span>
-				</div>
-				<p class="text-yellow-300/70 text-sm mt-2">正在准备您的专属体验...</p>
-			</div>
-		{/if}
-	{/if}
-
-	<!-- 底部提示 -->
-	<div class="mt-12 text-center text-yellow-300/60 text-sm max-w-2xl">
-		<p class="mb-2">💡 小贴士：初次体验建议选择60秒，可以获得更好的效果</p>
-		<p>所有体验都支持中途退出，请根据您的时间安排自由选择</p>
-	</div>
+		<!-- 底部说明 -->
+		<footer class="page-footer">
+			<p class="footer-text">
+				💡 体验结束后可重新选择时长
+			</p>
+		</footer>
+	</main>
 </div>
 
 <style>
-	.gradient-text {
-		background: linear-gradient(135deg, #FFD700 0%, #FFF8DC 50%, #DAA520 100%);
+	.awake-container {
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+		background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* 背景装饰 */
+	.bg-decoration {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.floating-element {
+		position: absolute;
+		width: 100px;
+		height: 100px;
+		background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+		border-radius: 50%;
+		left: var(--x);
+		top: var(--y);
+		animation: floating 6s ease-in-out infinite;
+		animation-delay: var(--delay);
+	}
+
+	@keyframes floating {
+		0%, 100% {
+			transform: translate(0, 0) scale(1);
+			opacity: 0.3;
+		}
+		50% {
+			transform: translate(-20px, -30px) scale(1.1);
+			opacity: 0.6;
+		}
+	}
+
+	/* 主内容 */
+	.main-content {
+		max-width: 800px;
+		width: 100%;
+		position: relative;
+		z-index: 1;
+	}
+
+	/* 返回按钮 */
+	.back-button {
+		position: absolute;
+		top: -60px;
+		left: 0;
+		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 12px;
+		padding: 0.75rem 1rem;
+		color: rgba(255, 255, 255, 0.8);
+		cursor: pointer;
+		transition: all 0.3s ease;
+		backdrop-filter: blur(10px);
+	}
+
+	.back-button:hover {
+		background: rgba(255, 255, 255, 0.15);
+		transform: translateX(-2px);
+	}
+
+	.back-icon {
+		font-size: 1.2rem;
+		font-weight: bold;
+	}
+
+	/* 页面标题 */
+	.page-header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.page-title {
+		font-size: 2.5rem;
+		font-weight: 600;
+		color: #ffd700;
+		margin: 0 0 1rem 0;
+		background: linear-gradient(135deg, #ffd700, #ffed4a);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 	}
 
-	.particles-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		pointer-events: none;
-		z-index: 1;
+	.page-subtitle {
+		font-size: 1rem;
+		color: rgba(255, 255, 255, 0.7);
+		margin: 0;
+		line-height: 1.5;
 	}
 
-	.particle {
-		position: absolute;
-		width: 4px;
-		height: 4px;
-		background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%);
-		border-radius: 50%;
-		animation: float 4s ease-in-out infinite;
-	}
-
-	@keyframes float {
-		0%, 100% { 
-			transform: translateY(0) scale(1);
-			opacity: 0.3;
-		}
-		50% { 
-			transform: translateY(-20px) scale(1.2);
-			opacity: 0.8;
-		}
+	/* 时长卡片 */
+	.duration-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 1.5rem;
+		margin-bottom: 2rem;
 	}
 
 	.duration-card {
 		position: relative;
-		backdrop-filter: blur(12px);
+		padding: 2rem 1.5rem;
 		background: rgba(0, 0, 0, 0.4);
-		border: 2px solid rgba(255, 215, 0, 0.3);
-		border-radius: 1.5rem;
-		padding: 2rem;
-		text-align: center;
-		transition: all 0.3s ease;
-		transform: translateY(0);
+		border: 2px solid rgba(255, 255, 255, 0.1);
+		border-radius: 20px;
 		cursor: pointer;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		text-align: center;
+		backdrop-filter: blur(10px);
+		animation: cardSlideIn 0.6s ease-out forwards;
+		animation-delay: var(--animation-delay);
+		opacity: 0;
+		transform: translateY(30px);
 	}
 
-	.duration-card:hover:not(:disabled) {
-		transform: translateY(-8px);
-		border-color: rgba(255, 215, 0, 0.6);
-		box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+	@keyframes cardSlideIn {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
-	.duration-card:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
+	.duration-card:hover {
+		transform: translateY(-8px) scale(1.02);
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 	}
 
 	.duration-card.selected {
-		border-color: #FFD700;
-		background: rgba(255, 215, 0, 0.1);
-		transform: translateY(-8px) scale(1.02);
+		transform: translateY(-8px) scale(1.05);
+		animation: pulse 0.8s ease-in-out;
+	}
+
+	@keyframes pulse {
+		0%, 100% {
+			box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
+		}
+		50% {
+			box-shadow: 0 25px 50px rgba(255, 215, 0, 0.5);
+		}
+	}
+
+	.duration-card.disabled {
+		pointer-events: none;
+		opacity: 0.7;
+	}
+
+	/* 紧急模式样式 */
+	.duration-card.emergency:hover {
+		border-color: rgba(239, 68, 68, 0.6);
+		box-shadow: 0 20px 40px rgba(239, 68, 68, 0.2);
+	}
+
+	.duration-card.emergency.selected {
+		border-color: rgba(239, 68, 68, 0.8);
+		box-shadow: 0 25px 50px rgba(239, 68, 68, 0.4);
+	}
+
+	/* 推荐模式样式 */
+	.duration-card.recommended {
+		border-color: rgba(255, 215, 0, 0.4);
+		background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+	}
+
+	.duration-card.recommended:hover {
+		border-color: rgba(255, 215, 0, 0.7);
 		box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
 	}
 
-	.duration-card.recommended {
-		border-color: rgba(255, 215, 0, 0.6);
-		background: rgba(255, 215, 0, 0.05);
+	.duration-card.recommended.selected {
+		border-color: rgba(255, 215, 0, 0.9);
+		box-shadow: 0 25px 50px rgba(255, 215, 0, 0.5);
 	}
 
+	/* 高级模式样式 */
+	.duration-card.premium:hover {
+		border-color: rgba(147, 51, 234, 0.6);
+		box-shadow: 0 20px 40px rgba(147, 51, 234, 0.2);
+	}
+
+	.duration-card.premium.selected {
+		border-color: rgba(147, 51, 234, 0.8);
+		box-shadow: 0 25px 50px rgba(147, 51, 234, 0.4);
+	}
+
+	/* 推荐标识 */
 	.recommended-badge {
 		position: absolute;
-		top: -10px;
-		left: 50%;
-		transform: translateX(-50%);
-		background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
+		top: -8px;
+		right: 1rem;
+		background: linear-gradient(135deg, #ffd700, #ffed4a);
 		color: #000;
-		padding: 4px 12px;
+		padding: 0.25rem 0.75rem;
 		border-radius: 12px;
-		font-size: 12px;
+		font-size: 0.75rem;
 		font-weight: 600;
+		box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+	}
+
+	/* 卡片内容 */
+	.card-icon {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+	}
+
+	.card-header {
+		margin-bottom: 1.5rem;
 	}
 
 	.duration-number {
-		font-size: 3rem;
+		font-size: 2.5rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, #FFD700 0%, #FFF8DC 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-		margin-bottom: 1rem;
+		color: #ffd700;
+		margin-bottom: 0.5rem;
+		font-family: 'SF Mono', 'Monaco', monospace;
 	}
 
-	.features {
+	.card-title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: white;
+		margin: 0 0 0.25rem 0;
+	}
+
+	.card-subtitle {
+		font-size: 0.9rem;
+		color: rgba(255, 255, 255, 0.6);
+		margin: 0;
+	}
+
+	.card-description {
+		margin-bottom: 1.5rem;
+	}
+
+	.description-text {
+		font-size: 0.9rem;
+		color: rgba(255, 255, 255, 0.7);
+		line-height: 1.4;
+		margin: 0;
+	}
+
+	/* 特性标签 */
+	.card-features {
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
 		gap: 0.5rem;
+		justify-content: center;
 	}
 
-	.feature {
-		padding: 0.5rem;
-		background: rgba(255, 215, 0, 0.1);
-		border-radius: 0.5rem;
-		font-size: 0.875rem;
-		color: rgba(255, 248, 220, 0.9);
+	.feature-tag {
+		font-size: 0.7rem;
+		padding: 0.25rem 0.5rem;
+		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 8px;
+		color: rgba(255, 255, 255, 0.8);
 	}
 
+	/* 选择指示器 */
+	.selection-indicator {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		width: 32px;
+		height: 32px;
+		background: #ffd700;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		animation: checkAppear 0.3s ease-out;
+	}
+
+	@keyframes checkAppear {
+		from {
+			transform: scale(0);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+
+	.check-icon {
+		color: #000;
+		font-weight: bold;
+		font-size: 1rem;
+	}
+
+	/* 页面底部 */
+	.page-footer {
+		text-align: center;
+		opacity: 0.7;
+	}
+
+	.footer-text {
+		font-size: 0.85rem;
+		color: rgba(255, 255, 255, 0.6);
+		margin: 0;
+	}
+
+	/* 响应式设计 */
+	@media (max-width: 768px) {
+		.duration-cards {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		.page-title {
+			font-size: 2rem;
+		}
+
+		.duration-card {
+			padding: 1.5rem 1rem;
+		}
+
+		.back-button {
+			top: -50px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.awake-container {
+			padding: 0.5rem;
+		}
+
+		.page-title {
+			font-size: 1.75rem;
+		}
+
+		.page-subtitle {
+			font-size: 0.9rem;
+		}
+
+		.duration-card {
+			padding: 1.25rem 1rem;
+		}
+
+		.card-icon {
+			font-size: 2.5rem;
+		}
+
+		.duration-number {
+			font-size: 2rem;
+		}
+	}
+
+	/* 无障碍支持 */
 	@media (prefers-reduced-motion: reduce) {
-		.particle,
-		.animate-pulse,
-		.animate-spin {
+		.floating-element {
 			animation: none;
 		}
-		
+
 		.duration-card {
-			transform: none !important;
+			animation: none;
+			opacity: 1;
+			transform: translateY(0);
 		}
-		
-		.duration-card:hover:not(:disabled) {
-			transform: none !important;
+
+		.duration-card:hover {
+			transform: none;
 		}
+	}
+
+	/* 键盘导航支持 */
+	.duration-card:focus {
+		outline: 2px solid #ffd700;
+		outline-offset: 2px;
 	}
 </style> 

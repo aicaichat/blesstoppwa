@@ -1,0 +1,49 @@
+# 太极白鹤亮翅动画FBX文件
+# 包含白鹤展翅的优雅动作
+# 动画时长: 6秒
+# 特点: 双臂如鹤翅展开，一高一低，身体挺拔
+
+FBXHeaderExtension:  {
+	FBXHeaderVersion: 1003
+	FBXVersion: 7400
+	Creator: "Tai Chi Animation System"
+	SceneInfo: "SceneInfo::GlobalInfo", "UserData" {
+		MetaData:  {
+			Title: "Tai Chi White Crane Spreads Wings"
+			Subject: "White crane spreads wings movement"
+			Keywords: "taichi,white crane,wings,elegant"
+			Comment: "Elegant movement mimicking crane spreading wings"
+		}
+	}
+}
+
+# 动画数据
+Objects:  {
+	# 右臂上抬（鹤翅上展）
+	AnimationCurveNode: "RightArm_Raise", "" {
+		# 右臂缓慢上抬至头部高度
+		# 手臂保持圆弧形
+		# 手掌轻松下垂
+	}
+	
+	# 左臂下按
+	AnimationCurveNode: "LeftArm_Press", "" {
+		# 左臂下沉至腰侧
+		# 掌心向下轻按
+		# 配合身体重心
+	}
+	
+	# 身体姿态
+	AnimationCurveNode: "Body_Posture", "" {
+		# 脊柱挺拔如鹤立
+		# 头部轻微上顶
+		# 整体气质优雅
+	}
+	
+	# 腿部稳定
+	AnimationCurveNode: "Legs_Stable", "" {
+		# 双腿稳定站立
+		# 重心略向后
+		# 膝盖微弯
+	}
+} 

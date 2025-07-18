@@ -3,6 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { breatheState, userSession, trackEvent } from '$lib/stores/appState.js';
+	import { speakUnified, speakUnifiedSequence, stopUnified, getCurrentEngine } from '$lib/utils/unifiedTTS.js';
+	import { generateTimedScripts } from '$lib/utils/divineScripts.js';
 
 	// 安全的状态订阅，防止SSR错误
 	let state = {
@@ -29,32 +31,35 @@
 	let audioContext = null;
 	let narrationText = '';
 	let showSkipButton = false;
+	let lastNarrationTime = 0;
+	let narrationCooldown = 3000; // 3秒冷却时间
+	let currentEngine = null;
 
-	const phrases = {
-		30: [
-			{ time: 0, text: "深呼吸，放下一切焦虑" },
-			{ time: 8, text: "感受内心的宁静" },
-			{ time: 15, text: "让平静充满身心" },
-			{ time: 25, text: "体验圆满的安宁" }
-		],
-		60: [
-			{ time: 0, text: "欢迎来到心灵净土" },
-			{ time: 15, text: "跟随呼吸的节奏" },
-			{ time: 30, text: "感受金色光芒的护佑" },
-			{ time: 45, text: "让慈悲之光净化心灵" },
-			{ time: 55, text: "体验完整的宁静" }
-		],
-		90: [
-			{ time: 0, text: "观音无畏布施，护佑众生" },
-			{ time: 25, text: "呼吸之间，万法皆空" },
-			{ time: 50, text: "金刚般若，智慧现前" },
-			{ time: 70, text: "慈悲喜舍，四无量心" },
-			{ time: 85, text: "圆满功德，回向众生" }
-		]
-	};
+	let phrases = {};
+	let divineType = 'guanyin';
 
-	onMount(() => {
+	onMount(async () => {
 		if (browser) {
+			// 初始化统一 TTS 系统
+			try {
+				const { unifiedTTS } = await import('$lib/utils/unifiedTTS.js');
+				await unifiedTTS.init();
+				
+				// 获取当前引擎信息
+				const engineInfo = getCurrentEngine();
+				currentEngine = engineInfo.name;
+				console.log('🎵 当前 TTS 引擎:', engineInfo);
+				
+				// 记录引擎使用情况
+				trackEvent('tts_engine_selected', {
+					engine: currentEngine,
+					quality: engineInfo.quality,
+					available: engineInfo.available
+				});
+			} catch (e) {
+				console.warn('TTS初始化失败，使用基础语音:', e);
+			}
+			
 			// 安全地获取 duration
 			let duration;
 			try {
@@ -71,6 +76,48 @@
 			}
 
 			trackEvent('page_view', { page: 'breathe', duration });
+			
+			// 生成个性化神仙语音文案
+			try {
+				const userState = {
+					duration: duration,
+					calmScore: 70, // 默认值
+					stressLevel: 'medium',
+					userType: 'general'
+				};
+				
+				const scriptConfig = generateTimedScripts(duration, userState);
+				phrases = { [duration]: scriptConfig.phrases };
+				divineType = scriptConfig.type;
+				
+				console.log('🎵 生成神仙语音文案:', divineType, phrases);
+			} catch (error) {
+				console.warn('文案生成失败，使用默认文案:', error);
+				// 降级到默认文案
+				phrases = {
+					30: [
+						{ time: 0, text: "深呼吸，放下一切焦虑" },
+						{ time: 8, text: "感受内心的宁静" },
+						{ time: 15, text: "让平静充满身心" },
+						{ time: 25, text: "体验圆满的安宁" }
+					],
+					60: [
+						{ time: 0, text: "欢迎来到心灵净土" },
+						{ time: 15, text: "跟随呼吸的节奏" },
+						{ time: 30, text: "感受金色光芒的护佑" },
+						{ time: 45, text: "让慈悲之光净化心灵" },
+						{ time: 55, text: "体验完整的宁静" }
+					],
+					90: [
+						{ time: 0, text: "观音无畏布施，护佑众生" },
+						{ time: 25, text: "呼吸之间，万法皆空" },
+						{ time: 50, text: "金刚般若，智慧现前" },
+						{ time: 70, text: "慈悲喜舍，四无量心" },
+						{ time: 85, text: "圆满功德，回向众生" }
+					]
+				};
+			}
+			
 			startBreathing(duration);
 			
 			// 3秒后显示跳过按钮
@@ -87,6 +134,8 @@
 		if (audioContext) {
 			audioContext.close();
 		}
+		// 停止所有TTS语音
+		stopUnified();
 	});
 
 	function startBreathing(duration) {
@@ -135,22 +184,52 @@
 		}, 100);
 	}
 
-	function updateNarration(elapsed, duration) {
+	async function updateNarration(elapsed, duration) {
 		const currentPhrases = phrases[duration] || phrases[60];
 		const currentPhrase = currentPhrases
 			.reverse()
 			.find(phrase => elapsed >= phrase.time);
 		
 		if (currentPhrase && currentPhrase.text !== narrationText) {
-			narrationText = currentPhrase.text;
+			// 检查冷却时间
+			const now = Date.now();
+			if (now - lastNarrationTime < narrationCooldown) {
+				return;
+			}
 			
-			// 简化的语音合成
-			if ('speechSynthesis' in window) {
-				const utterance = new SpeechSynthesisUtterance(currentPhrase.text);
-				utterance.lang = 'zh-CN';
-				utterance.rate = 0.8;
-				utterance.pitch = 0.9;
-				speechSynthesis.speak(utterance);
+			narrationText = currentPhrase.text;
+			lastNarrationTime = now;
+			
+			// 使用统一 TTS 语音合成
+			try {
+				await speakUnified(currentPhrase.text, divineType, {
+					volume: 0.85,
+					rate: 0.75
+				});
+				
+				// 记录语音播放事件
+				trackEvent('tts_play_success', {
+					engine: currentEngine,
+					text: currentPhrase.text,
+					type: divineType
+				});
+			} catch (error) {
+				console.warn('统一 TTS 失败，使用基础语音:', error);
+				
+				// 记录失败事件
+				trackEvent('tts_play_error', {
+					engine: currentEngine,
+					error: error.message
+				});
+				
+				// 降级到基础语音
+				if ('speechSynthesis' in window) {
+					const utterance = new SpeechSynthesisUtterance(currentPhrase.text);
+					utterance.lang = 'zh-CN';
+					utterance.rate = 0.8;
+					utterance.pitch = 0.9;
+					speechSynthesis.speak(utterance);
+				}
 			}
 		}
 	}
