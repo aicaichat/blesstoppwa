@@ -12,6 +12,7 @@ const EvalPage = lazy(() => import('./pages/EvalPage'))
 const GiftPage = lazy(() => import('./pages/GiftPage'))
 const SummonPage = lazy(() => import('./pages/SummonPage'))
 const BraceletPage = lazy(() => import('./pages/BraceletPage'))
+const PalmReadingPage = lazy(() => import('./pages/PalmReadingPage'))
 
 // Particle component
 const ParticleBackground = () => {
@@ -95,6 +96,7 @@ function App() {
               <Route path="/blessing/gift" element={<GiftPage />} />
               <Route path="/bracelet/:braceletId" element={<BraceletPage />} />
               <Route path="/summon/:braceletId" element={<SummonPage />} />
+              <Route path="/palm-reading" element={<PalmReadingPage />} />
             </Routes>
           </Suspense>
         </div>
